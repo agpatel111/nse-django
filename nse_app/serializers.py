@@ -3,34 +3,105 @@ from .models import *
 
 
 
-class nse_dataSerializer(serializers.ModelSerializer):
+class settingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = nse_setting
+        fields = "__all__"
+        # exclude = ['sell_buy_time',]
 
-    
-    class Meta:                     
-        model = nse_model
-        fields = '__all__'
-        # exclude = ['buy_time']
+class stockListSerializer(serializers.ModelSerializer):
+    percentage = settingSerializer()
+    class Meta:
+        model = stock_detail
+        fields = "__all__"
+        depth = 1
+        # exclude = ['sell_buy_time',]
 
-class nse_profitSerializer(serializers.ModelSerializer):
+class stockPostSerializer(serializers.ModelSerializer):
+    # percentage = settingSerializer()
+    class Meta:
+        model = stock_detail
+        fields = "__all__"
+        # depth = 1
+        # exclude = ['sell_buy_time',]
 
-    
-    class Meta:                     
-        model = nse_profit
-        fields = '__all__'
-        # exclude = ['buy_time']
 
-class nse_s_Serializer(serializers.ModelSerializer):
+class putbankniftySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = stock_detail
+        fields = "__all__"
+        # exclude = ['percentage',]
 
-    
-    class Meta:                     
-        model = nse_data
-        fields = '__all__'
-        # exclude = ['buy_time']
 
-class nseSerializer(serializers.ModelSerializer):
 
-    
-    class Meta:                     
-        model = nse
-        fields = '__all__'
-        # exclude = ['buy_time']
+
+# class UserRegistrationSerializer(serializers.ModelSerializer):
+
+#     class Meta:
+#         model = User
+#         fields = ['email','fullname' ,'password','password2']
+#         extra_kwargs={
+#             'password':{'write_only':True}
+#     }
+
+
+#     def validate(self, attrs):
+#         password=attrs.get('password')
+#         password2=attrs.get('password2')
+#         if password != password2:
+#             raise serializers.ValidationError("password and confirm password DOES NOT MATCH")
+#         return attrs
+
+#     def create(self, validated_data):
+#         return User.objects.create_user(**validated_data)
+
+
+from rest_framework import serializers
+
+
+# class LoginSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = User
+#         fields = [
+#             "email",
+#             "password",
+#         ]
+
+#         extra_kwargs = {"password": {"write_only": True}}
+
+#     def validate(self, data):
+#         password = data.get("password")
+#         email = data.get("email")
+
+
+# class RegistrationSerializer(serializers.ModelSerializer):
+
+# 	password2 				= serializers.CharField(style={'input_type': 'password'}, write_only=True)
+
+# 	class Meta:
+# 		model = User
+# 		fields = ['email', 'username', 'password', 'password2']
+# 		extra_kwargs = {
+# 				'password': {'write_only': True},
+# 		}	
+
+
+# 	def	save(self):
+
+# 		account = User(
+# 					email=self.validated_data['email'],
+# 					username=self.validated_data['username']
+# 				)
+# 		password = self.validated_data['password']
+# 		password2 = self.validated_data['password2']
+# 		if password != password2:
+# 			raise serializers.ValidationError({'password': 'Passwords must match.'})
+# 		account.set_password(password)
+# 		account.save()
+# 		return account
+
+# class UserLoginSerializer(serializers.ModelSerializer):
+#     email = serializers.EmailField(max_length=255)
+#     class Meta:
+#         model = User
+#         fields = ['email',  'password']        

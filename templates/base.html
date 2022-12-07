@@ -17,11 +17,17 @@
         <thead class="table-dark">
             <tr>
                 <th scope="col">No.</th>
-                <th scope="col">strike_price</th>
-                <th scope="col">bid_price</th>
+                <th scope="col">buy_strike_price</th>
+                <th scope="col">buy_bid_price</th>
                 <th scope="col">buy_time</th>
                 <th scope="col">live_price</th>
                 <th scope="col">pcr_value</th>
+                <th scope="col">shell_strike_price</th>
+                <th scope="col">shell_bid_price</th>
+               
+                <th scope="col">sell_time</th>
+               
+                <th scope="col">Buy Status</th>
 
             </tr>
         </thead>
@@ -34,6 +40,10 @@
                 <td>{{ i.buy_time }}</td>
                 <td>{{ i.live_price }}</td>
                 <td>{{ i.pcr_value }}</td>
+                <td>{{ i.shell_strike_price }}</td>
+                <td>{{ i.shell_bid_price }}</td>
+                <td>{{ i.shell_buy_time }}</td>
+                <td style="color:blue;" ><b>{{ i.buy_status }}</b></td>
             </tr>
             {% endfor %}
 
@@ -50,4 +60,4 @@
         crossorigin="anonymous"></script>
 </body>
 
-</html>
+</html> 
