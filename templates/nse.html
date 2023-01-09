@@ -20,14 +20,14 @@
                 <th scope="col">Base Strike Price</th>
                 <th scope="col">Live Strike Price</th>
                 <th scope="col">Buy Price</th>
-                <th scope="col">Percentage</th>
-                <th scope="col">Sell Price</th>
-                <th scope="col">Stop Loseprice</th>
-                <th scope="col">Live Brid Price</th>
+                <th scope="col">target Price</th>
+                <th scope="col">Stop Lose</th>
                 <th scope="col">Exit Price</th>
                 <th scope="col">Buy Time</th>
-                <th scope="col">Sell Buy Time</th>
+                <th scope="col">Sell Time</th>
+                <th scope="col">Percentage</th>
                 <th scope="col">Status</th>
+                <th scope="col">Final Status</th>
 
             </tr>
         </thead>
@@ -40,12 +40,12 @@
                 <td>{{ i.buy_price }}</td>
                 <td>{{ i.sell_price }}</td>
                 <td>{{ i.stop_loseprice }}</td>
-                <td>{{ i.live_brid_price }}</td>
                 <td>{{ i.exit_price }}</td>
                 <td>{{ i.buy_time }}</td>
                 <td>{{ i.sell_buy_time }}</td>
                 <td>{{ i.percentage_id }}</td>
                 <td style="color:blue;"><b>{{ i.status }}</b></td>
+                <td >{{ i.final_status }}</td>
             </tr>
             {% endfor %}
 
