@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+  <!-- MDB -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.1.0/mdb.min.css" rel="stylesheet" />
+  <title>Document</title>
+</head>
+
+<body>
+  <h2>NSE</h2>
+  <table class="table table-sm">
+    <thead class="bg-light">
+      <tr>
+        <th>No.</th>
+        <th>Base Strike</th>
+        <th>Live Strike</th>
+        <th>Entry Price</th>
+        <th>Entry PCR</th>
+        <th>Target Price</th>
+        <th>Stop Lose</th>
+        <th>Exit Price</th>
+        <th>Exit PCR</th>
+        <th>Buy Time</th>
+        <th>Sell Time</th>
+        <th>Option</th>
+        <th>Status</th>
+        <th>Final Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for i in data %}
+      <tr>
+
+        <td>
+          <p class="fw-bold mb-1">
+            {{ forloop.counter }}
+          </p>
+        </td>
+
+        <td>
+          <p class="fw-normal mb-1">
+            {{ i.base_strike_price }}
+          </p>
+        </td>
+
+        <td>
+          <p class="fw-normal mb-1">
+            {{ i.live_Strike_price }}
+          </p>
+        </td>
+
+        <td>
+          <span class="badge badge-primary rounded-pill d-inline">
+            {{ i.buy_price }}
+          </span>
+        </td>
+
+        <td>
+          <span class="badge badge-info rounded-pill d-inline">
+            {{ i.buy_pcr }}
+          </span>
+        </td>
+
+        <td>
+          <p class="fw-normal mb-1">
+            {{ i.sell_price }}
+          </p>
+        </td>
+
+        <td>
+          <p class="fw-normal mb-1">
+            {{ i.stop_loseprice }}
+          </p>
+        </td>
+
+        <td>
+          <p class="fw-normal mb-1">
+            {{ i.exit_price }}
+          </p>
+        </td>
+
+        <td>
+          <span class="badge badge-info rounded-pill d-inline">
+            {{ i.exit_pcr }}
+          </span>
+        </td>
+
+        <td>
+          <p class="fw-normal mb-1 ">
+            {{ i.buy_time }}
+          </p>
+        </td>
+
+        <td>
+          <p class="fw-normal mb-1">
+            {{ i.sell_buy_time }}
+          </p>
+        </td>
+
+        {% if i.percentage_id == 1 %}
+        <td>
+          <p class="fw-normal mb-1">BANKNIFTY CE</p>
+        </td>
+        {% elif i.percentage_id == 2 %}
+        <td>
+          <p class="fw-normal mb-1">NIFTY CE</p>
+        </td>
+        {% elif i.percentage_id == 3 %}
+        <td>
+          <p class="fw-normal mb-1">BANKNIFTY PE</p>
+        </td>
+        {% elif i.percentage_id == 4 %}
+        <td>
+          <p class="fw-normal mb-1">NIFTY PE</p>
+        </td>
+        {% elif i.percentage_id == 5 %}
+        <td>
+          <p class="fw-normal mb-1">
+            {{ i.stock_name }}
+          </p>
+        </td>
+        {% endif %}
+
+        <td>
+          {% if i.status == 'BUY' %}
+          <span class="badge badge-primary rounded-pill d-inline">
+            {{ i.status }}
+          </span>
+          {% else %}
+          {{ i.status }}
+          {% endif %}
+        </td>
+
+        {% if i.final_status == 'PROFIT' %}
+        <td>
+          <span class="badge badge-success rounded-pill d-inline">
+            {{ i.final_status }}
+          </span>
+        </td>
+        {% else %}
+        <td>
+          <span class="badge badge-danger rounded-pill d-inline">
+            {{ i.final_status }}
+          </span>
+        </td>
+        {% endif %}
+
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- MDB -->
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.1.0/mdb.min.js"></script>
+</body>
+
+</html>

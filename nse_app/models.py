@@ -41,11 +41,13 @@ class stock_detail(models.Model):
     base_strike_price = models.FloatField()
     live_Strike_price = models.FloatField()
     buy_price = models.FloatField()
+    buy_pcr = models.FloatField(blank=True, default = 0)
     percentage = models.ForeignKey(nse_setting, on_delete=models.CASCADE)
     sell_price = models.FloatField()
     stop_loseprice = models.FloatField()
     live_brid_price = models.FloatField()
     exit_price = models.FloatField(null=True)
+    exit_pcr = models.FloatField(blank=True, default = 0)
     buy_time = models.DateTimeField(auto_now_add= True)
     sell_buy_time = models.DateTimeField( null=True)
     status = models.CharField(max_length=50, choices=Buy_status, default='empty', blank=True)
@@ -53,7 +55,11 @@ class stock_detail(models.Model):
     stock_name = models.CharField(max_length=50, default='NA', blank=True)
     admin_call = models.BooleanField(default=False)
     call_put = models.CharField(max_length=50, blank=True, choices=call_or_put)
+    qnty = models.IntegerField(blank=True, default=0)
+    net_p_l = models.FloatField(blank=True, default=0)
 
+
+    
     # @classmethod
     # def create(cls, percentage):
     #     percentage = cls(percentage=percentage)

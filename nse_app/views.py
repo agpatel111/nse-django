@@ -21,8 +21,8 @@ from datetime import datetime
 # Create your views here.
 
 def home(request):
-    data = stock_detail.objects.all().order_by("buy_time").values()
-    return render(request, "nse.html", {"data": data})
+    data = stock_detail.objects.all().order_by("-buy_time").values()
+    return render(request, "base.html", {"data": data})
 
 def pcr(request):
     stock_url = 'https://zerodha.harmistechnology.com/stockname'

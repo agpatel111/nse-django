@@ -79,7 +79,7 @@ def sellFun(strikePrice, BidPrice, squareoff, stoploss, OptionId, lots):
         elif exch_seg == 'NFO' and (instrumenttype == 'OPTSTK' or instrumenttype == 'OPTIDX'):
             return df[(df['exch_seg'] == 'NFO') & (df['expiry'] == expiry_day) & (df['instrumenttype'] == instrumenttype) & (df['name'] == symbol) & (df['strike'] == strike_price) & (df['symbol'].str.endswith(pe_ce))].sort_values(by=['expiry'])
 
-    a = date(2023, 1, 12)
+    a = date(2023, 1, 19)
 
     if percentions_sm == 3:
         symbol = 'BANKNIFTY'
@@ -311,7 +311,7 @@ def NIFTY():
                                 stop_loss_CE = '%.2f'% (BidPrice_CE - (BidPrice_CE * lossPercentage_CALL ) / 100)
                                 strikePrice_CE = mx['strikePrice']
                                 # <------------------------------  ADD DATA TO DATABASE  ---------------------------------->
-                                stock_detail.objects.create(status="BUY",buy_price = BidPrice_CE, base_strike_price=strikePrice_CE, live_Strike_price=livePrice, live_brid_price=BidPrice_CE, sell_price= sellPrice_CE ,stop_loseprice=stop_loss_CE, percentage_id=OptionId_CALL , call_put =call_call )
+                                stock_detail.objects.create(status="BUY",buy_price = BidPrice_CE, base_strike_price=strikePrice_CE, live_Strike_price=livePrice, live_brid_price=BidPrice_CE, sell_price= sellPrice_CE ,stop_loseprice=stop_loss_CE, percentage_id=OptionId_CALL , call_put =call_call, buy_pcr = '%.5f'% (pcr) )
                                 postData = { "buy_price": BidPrice_CE, "base_strike_price":strikePrice_CE, "live_Strike_price":livePrice, "sell_price": sellPrice_CE, "stop_loseprice": stop_loss_CE, 'percentage': OptionId_CALL, 'call_put':call_call}
                                 if live_call == True:
                                     sellFun(strikePrice_CE, BidPrice_CE, squareoff_CE, stoploss_CE, OptionId_CALL, lot_size_CALL)
@@ -337,7 +337,7 @@ def NIFTY():
                                 stop_loss_PUT = '%.2f'% (BidPrice_PUT - (BidPrice_PUT * lossPercentage_PUT ) / 100)
                                 strikePrice_PUT = mx['strikePrice']
                                 # <------------------------------  ADD DATA TO DATABASE  ---------------------------------->
-                                stock_detail.objects.create(status="BUY",buy_price = BidPrice_PUT,live_brid_price=BidPrice_PUT , base_strike_price=strikePrice_PUT, live_Strike_price=livePrice, sell_price= sellPrice_PUT ,stop_loseprice=stop_loss_PUT, percentage_id=OptionId_PUT , call_put =put_put )
+                                stock_detail.objects.create(status="BUY",buy_price = BidPrice_PUT,live_brid_price=BidPrice_PUT , base_strike_price=strikePrice_PUT, live_Strike_price=livePrice, sell_price= sellPrice_PUT ,stop_loseprice=stop_loss_PUT, percentage_id=OptionId_PUT , call_put =put_put, buy_pcr = '%.5f'% (pcr) )
                                 postData = { "buy_price": BidPrice_PUT, "base_strike_price":strikePrice_PUT, "live_Strike_price":livePrice, "sell_price": sellPrice_PUT, "stop_loseprice": stop_loss_PUT, 'percentage': OptionId_PUT, 'call_put':put_put}
                                 if live_call == True:
                                     sellFun(strikePrice_PUT, BidPrice_PUT, squareoff_PUT, stoploss_PUT, OptionId_PUT, lot_size_PUT)
@@ -366,17 +366,17 @@ def NIFTY():
                                 final_status_admin_call = 'PROFIT'
                             else:
                                 final_status_admin_call = 'LOSS'
-                            stock_detail.objects.filter(id=stock_ID).update(status = 'SELL', exit_price = liveBidPrice, sell_buy_time=sell_time, final_status = final_status_admin_call)
+                            stock_detail.objects.filter(id=stock_ID).update(status = 'SELL', exit_price = liveBidPrice, sell_buy_time=sell_time, final_status = final_status_admin_call, exit_pcr= '%.5f'% (pcr))
                             print("SuccessFully SELL STOCK OF CALL")
                 
                         print('NIFTY CALL-> ' ,'buy_pricee: ', buy_pricee, 'sell_Pricee: ', sell_Pricee, 'liveBidPrice: ', liveBidPrice, 'stop_Losss: ', stop_Losss)
                         if sell_Pricee <= liveBidPrice :
                             final_statuss = "PROFIT"
-                            stock_detail.objects.filter(id=stock_ID).update(status = 'SELL', exit_price = liveBidPrice, sell_buy_time=sell_time, final_status = final_statuss, admin_call= True)
+                            stock_detail.objects.filter(id=stock_ID).update(status = 'SELL', exit_price = liveBidPrice, sell_buy_time=sell_time, final_status = final_statuss, admin_call= True, exit_pcr= '%.5f'% (pcr))
                             print("SuccessFully SELL STOCK OF CALL")
                         if stop_Losss >= liveBidPrice:
                             final_statuss = "LOSS"
-                            stock_detail.objects.filter(id=stock_ID).update(status = 'SELL', exit_price = liveBidPrice, sell_buy_time=sell_time, final_status = final_statuss,admin_call = True )
+                            stock_detail.objects.filter(id=stock_ID).update(status = 'SELL', exit_price = liveBidPrice, sell_buy_time=sell_time, final_status = final_statuss,admin_call = True, exit_pcr= '%.5f'% (pcr) )
                             print("SuccessFully SELL STOCK OF CALL")
                         # pprint.pprint(stock_ID)
             
@@ -397,19 +397,19 @@ def NIFTY():
                             else:
                                 final_status_admin_PUT = 'LOSS'
                             print("SuccessFully SELL STOCK OF PUT")
-                            stock_detail.objects.filter(id=stock_ID_put).update(status = 'SELL', exit_price = liveBidPrice_put, sell_buy_time=sell_time_put, final_status = final_status_admin_PUT)        
+                            stock_detail.objects.filter(id=stock_ID_put).update(status = 'SELL', exit_price = liveBidPrice_put, sell_buy_time=sell_time_put, final_status = final_status_admin_PUT, exit_pcr= '%.5f'% (pcr))        
                             
                         print('NIFTY PUT-> ' ,'buy_pricee: ', buy_pricee_put, 'sell_Pricee: ', sell_Pricee_put, 'liveBidPrice: ', liveBidPrice_put, 'stop_Losss: ', stop_Losss_put)
                         if sell_Pricee_put <= liveBidPrice_put :
                             final_statuss_put = "PROFIT"
-                            stock_detail.objects.filter(id=stock_ID_put).update(status = 'SELL', exit_price = liveBidPrice_put, sell_buy_time=sell_time_put, final_status = final_statuss_put, admin_call = True)        
+                            stock_detail.objects.filter(id=stock_ID_put).update(status = 'SELL', exit_price = liveBidPrice_put, sell_buy_time=sell_time_put, final_status = final_statuss_put, admin_call = True, exit_pcr= '%.5f'% (pcr))        
                             print("SuccessFully SELL STOCK OF PUT")
                         if stop_Losss_put >= liveBidPrice_put:
                             final_statuss_put = "LOSS"
-                            stock_detail.objects.filter(id=stock_ID_put).update(status = 'SELL', exit_price = liveBidPrice_put, sell_buy_time=sell_time_put, final_status = final_statuss_put, admin_call = True)        
+                            stock_detail.objects.filter(id=stock_ID_put).update(status = 'SELL', exit_price = liveBidPrice_put, sell_buy_time=sell_time_put, final_status = final_statuss_put, admin_call = True, exit_pcr= '%.5f'% (pcr))        
                             print("SuccessFully SELL STOCK OF PUT")
     except:
-                print("Connection refused by the server............ NIFTY")
+                print("Connection refused by the server...................................... NIFTY")
 
 
 
