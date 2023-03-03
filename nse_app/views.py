@@ -13,16 +13,123 @@ from rest_framework.authentication import TokenAuthentication
 import requests
 import json
 from datetime import datetime
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse, HttpResponse
+from datetime import date, datetime, timedelta
 
-# from rest_framework_simplejwt.tokens import RefreshToken
-# from rest_framework_simplejwt.tokens import RefreshToken
-# from django.contrib.auth.views import login
 
 # Create your views here.
 
 def home(request):
     data = stock_detail.objects.all().order_by("-buy_time").values()
-    return render(request, "base.html", {"data": data})
+    dataa = []
+    for i in data:
+        BuyTime = i['buy_time']
+        BuyTimeFormt = datetime.date(BuyTime)
+        today = date.today()
+        if BuyTimeFormt == today:
+            i['today'] = 'True'
+        dataa.append(i)
+    return render(request, "base.html", {"data": dataa})
+
+def settings(request):
+    data = live.objects.all()
+    return render(request, 'settings.html', { 'data' : data })
+
+@csrf_exempt
+def changesettings(request):
+    if request.method == 'POST':
+        name = request.POST['name'] 
+        obj = request.POST['live']
+        if obj == 'True':
+            obj = False
+        else:
+            obj = True
+        if name == 'BankNifty':
+            live.objects.filter(id = 1).update(live_banknifty = obj)
+            return JsonResponse({'status' : 1})
+        if name == 'Nifty':
+            live.objects.filter(id = 1).update(live_nifty = obj)
+            return JsonResponse({'status' : 1})
+
+@api_view(['POST'])
+def stock(request):
+    try:
+        if request.data['name'] == '':
+            return Response({ 'status': False, 'msg': 'name Required'}) 
+        name = request.data['name']
+
+        baseurl = "https://www.nseindia.com/"
+        headers =  {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, '
+                            'like Gecko) '
+                            'Chrome/80.0.3987.149 Safari/537.36',
+            'accept-language': 'en,gu;q=0.9,hi;q=0.8', 'accept-encoding': 'gzip, deflate, br'}
+        session = requests.Session()
+        req = session.get(baseurl, headers=headers, timeout=5)
+        cookies = dict(req.cookies)
+        url = 'https://www.nseindia.com/api/option-chain-equities?symbol=' + name
+
+        response = requests.get(url, headers=headers, timeout=5, cookies=cookies)
+        data = response.text
+        api_data = json.loads(data)
+
+        timestamp = api_data['records']['timestamp']
+        livePrice = api_data['records']['underlyingValue']
+
+        down_price = []    # upside from blue colour
+        down__price = api_data['filtered']['data']
+        for down in down__price:
+            if down['strikePrice'] <= livePrice:
+                down_price.append(down) 
+
+        up_price = []     # down side from blue colour
+        up__price = api_data['filtered']['data']
+        for up in up__price:
+            if up['strikePrice'] >= livePrice:
+                up_price.append(up) 
+
+        downSliceList = []
+        for downSlice in down_price[:-6:-1]:
+            ss = downSlice['PE']['openInterest'] + downSlice['PE']['changeinOpenInterest']
+            downSliceList.append(ss)
+        downSliceList.sort()
+        downSliceList.reverse()
+        downSliceList = downSliceList[:1]   #PE red Colour
+
+        upSliceList = []
+        for upSlice in up_price[0:5]:
+            ss = upSlice['CE']['openInterest'] + upSlice['CE']['changeinOpenInterest']
+            upSliceList.append(ss)
+        upSliceList.sort()
+        upSliceList.reverse()
+        upSliceList = upSliceList[:1]       #CE red Colour
+
+        PEMax = []
+        PEMaxValue = []                 #PE red Colour Strike Price
+        for downn in down_price[:-6:-1]:
+            aaa = downn['PE']['changeinOpenInterest'] + downn['PE']['openInterest']
+            if aaa == downSliceList[0]:
+                PEMax.append(downn)
+                PEMaxValue.append(downn['strikePrice'])
+
+        CEMax = []
+        CEMaxValue = []                 #CE red Colour Strike Price
+        for upp in up_price[0:5]:
+            upppp = upp['CE']['changeinOpenInterest'] + upp['CE']['openInterest']
+            if upppp == upSliceList[0]:
+                CEMax.append(upp)
+                CEMaxValue.append(upp['strikePrice'])
+
+        summ = api_data['filtered']['CE']['totOI']
+        summ2 = api_data['filtered']['PE']['totOI']
+        pcr = summ2 / summ
+
+        data = [{ 'name': name , 'timestamp': timestamp,'pcr': pcr, 'livePrice': livePrice,'PEMax': PEMax,'CEMax': CEMax, 'down_price': down_price, 'up_price': up_price }]
+        return Response({ 'status' : True, 'data': data })
+    except Exception as e:
+        print('stock->', name, e)
+        return Response({ 'status' : False, 'message': 'Something is wrong' })
+
 
 def pcr(request):
     stock_url = 'https://zerodha.harmistechnology.com/stockname'
@@ -32,7 +139,7 @@ def pcr(request):
     stocks = []
     for i in stock_api_data['data']:
         stocks.append(i['name'])
-    print(stocks)
+    # print(stocks)
 
     update_needed = []
     success_count = 0
@@ -52,22 +159,59 @@ def pcr(request):
             response = requests.get(url, headers=headers, timeout=5, cookies=cookies)
             data = response.text
             api_data = json.loads(data)
+
+            livePrice = api_data['records']['underlyingValue']
+
             sum = api_data['filtered']['CE']['totOI']
             sum2 = api_data['filtered']['PE']['totOI']
-            pcr = '%.2f' % (sum2 / sum)
+            pcr = '%.2f'% (sum2 / sum)
 
-            payload = {'name': stock, 'pcr': pcr}
+            down_price = []
+            down__price = api_data['filtered']['data']
+            for down in down__price:
+                if down['strikePrice'] <= livePrice:
+                    down_price.append(down) 
+
+            up_price = []
+            up__price = api_data['filtered']['data']
+            for up in up__price:
+                if up['strikePrice'] >= livePrice:
+                    up_price.append(up) 
+
+            downSliceList = []
+            for downSlice in down_price[:-6:-1]:
+                ss = downSlice['PE']['openInterest'] + downSlice['PE']['changeinOpenInterest']
+                downSliceList.append(ss)
+            downSliceList.sort()
+            downSliceList.reverse()
+            downSliceList = downSliceList[:1]
+
+            upSliceList = []
+            for upSlice in up_price[0:5]:
+                ss = upSlice['CE']['openInterest'] + upSlice['CE']['changeinOpenInterest']
+                upSliceList.append(ss)
+            upSliceList.sort()
+            upSliceList.reverse()
+            upSliceList = upSliceList[:1]
+
+            diff = downSliceList[0] - upSliceList[0]
+            if diff > 0:
+                pe_ce_Diff = True
+            else:
+                pe_ce_Diff = False
+
+            payload = {'name': stock, 'pcr': pcr, 'PE_CE_diffrent': pe_ce_Diff}
             r = requests.put(
                 "https://zerodha.harmistechnology.com/stockname", data=payload)
             success_count = success_count + 1
             # pcr_stock_name.objects.filter(name = stock).update(pcr =  pcr)
-            print(stock, '->',pcr)
+            print(stock, '->',pcr, '->', pe_ce_Diff)
             
-        except:
-            print('An exception occurred')
+        except Exception as e:
+            print('Error-->',e)
+            print('An exception occurred','->', stock)
             update_needed.append(stock)
             reject_count = reject_count + 1
-            print(stock)
     return render(request, "PcrStock.html", { 'update_needed' : update_needed, 'success_count' : success_count, 'reject_count': reject_count })
 
 class stock_details(APIView):
@@ -77,32 +221,12 @@ class stock_details(APIView):
     def get(self, request):
         nse_objs = stock_detail.objects.all()
         # demo = stock_detail.objects.values_list().values()
-        
-        
-        # baseurl = "https://www.nseindia.com/"
-        # headers =  {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, '
-        #                     'like Gecko) '
-        #                     'Chrome/80.0.3987.149 Safari/537.36',
-        #     'accept-language': 'en,gu;q=0.9,hi;q=0.8', 'accept-encoding': 'gzip, deflate, br'}
-        # session = requests.Session()
-        # req = session.get(baseurl, headers=headers, timeout=5)
-        # cookies = dict(req.cookies)
-        
-        # url = 'https://www.nseindia.com/api/option-chain-indices?symbol=BANKNIFTY'
-
-        # response = requests.get(url, headers=headers, timeout=5, cookies=cookies)
-        # data = response.text
-        # api_data = json.loads(data)
-        # filteredData = api_data['filtered']['data']
-        
-
         serializer = stockListSerializer(nse_objs, many=True)
         return Response(
             {"status": True, "msg": "stock details fetched", "data": serializer.data}
         )
 
     def post(self, request):
-
         try:
             data = request.data
             # _mutable = data._mutable
@@ -308,9 +432,7 @@ def get_nse_data(self , request , pk):
         #     {"status": True, "msg": "nse_profit fetched", "data": serializer.data}
 
 class SnippetDetail(APIView):
-    """
-    Retrieve, update or delete a snippet instance.
-    """
+
     def get_object(self, pk):
         try:
             return nse_setting.objects.get(pk=pk)
@@ -400,21 +522,17 @@ class PcrStockName(APIView):
             return Response({"status": False, "msg": "Invalid StockName", "data": {}})
 
 
-import random
 import requests
-import threading
 import requests
-import pprint
 import json
 
 
 def print_hello(request):
-    print("NISHANT")
-    print("HELLLLLO")
+    # print("HELLLLLO")
     url = 'https://www.nseindia.com/api/option-chain-indices?symbol=NIFTY'
     headers = {'user-agent': 'my-app/0.0.1'}
     response = requests.get(url, headers=headers)
     data = response.json()
-    timestamp = data['records']['timestamp']
-    print(timestamp)
-    return render(request, 'PcrStock.html')
+    timestamp = data['records']
+    # print(data)
+    return JsonResponse({"timestamp": timestamp })

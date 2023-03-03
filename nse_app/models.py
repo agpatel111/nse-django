@@ -1,8 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
-from .managers import CustomUserManager, MyAccountManager
 from django.utils.translation import gettext_lazy as _
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+
 
 Buy_status = (
     ('BUY', 'BUY'),
@@ -35,6 +33,9 @@ class nse_setting(models.Model):
 
     def __str__(self):
         return self.option
+    
+    class Meta:
+        db_table = 'settings'
 
 class stock_detail(models.Model):
     
@@ -58,7 +59,11 @@ class stock_detail(models.Model):
     qnty = models.IntegerField(blank=True, default=0)
     net_p_l = models.FloatField(blank=True, default=0)
 
+    def __str__(self):
+        return self.percentage,'->', self.buy_price
 
+    class Meta:
+        db_table = 'stocks_details'
     
     # @classmethod
     # def create(cls, percentage):
@@ -73,69 +78,24 @@ class pcr_stock_name(models.Model):
     pcr = models.FloatField(null=True)
     date = models.DateTimeField(auto_now=True , null=True)
 
-
-
-class Category(models.Model):
-    category_name = models.CharField(max_length=100)
-
-    def __str__(self) -> str:
-        return self.category_name
+    class Meta:
+        db_table = 'pcr_stockName'
     
 class live(models.Model):
+    live_banknifty = models.BooleanField(default=False)
+    live_nifty = models.BooleanField(default=False)
+    live_stock = models.BooleanField(default=False)
     live_set = models.BooleanField(default=False)
 
-
+    class Meta:
+        db_table = 'live_settings'
     
+class pcr_option(models.Model):
 
-
-
-# class User(AbstractBaseUser):
-# 	email 					= models.EmailField(verbose_name="email", max_length=60, unique=True)
-# 	username 				= models.CharField(max_length=30, unique=True)
-# 	date_joined				= models.DateTimeField(verbose_name='date joined', auto_now_add=True)
-# 	last_login				= models.DateTimeField(verbose_name='last login', auto_now=True)
-# 	is_admin				= models.BooleanField(default=True)
-# 	is_active				= models.BooleanField(default=True)
-# 	is_staff				= models.BooleanField(default=False)
-# 	is_superuser			= models.BooleanField(default=False)
-
-
-# 	USERNAME_FIELD = 'email'
-# 	REQUIRED_FIELDS = ['username']
-
-# 	objects = MyAccountManager()
-
-# 	def __str__(self):
-# 		return self.email
-
-# 	# For checking permissions. to keep it simple all admin have ALL permissons
-# 	def has_perm(self, perm, obj=None):
-# 		return self.is_admin
-
-# 	# Does this user have permission to view this app? (ALWAYS YES FOR SIMPLICITY)
-# 	def has_module_perms(self, app_label):
-# 		return True
-
-
-
-# class User(AbstractUser):
-#     username = models.CharField(max_length=30, unique=True)
-
-#     email = models.EmailField(_('email address'), unique=True)
-#     date_joined	= models.DateTimeField(verbose_name='date joined', auto_now_add=True)
-#     last_login = = models.DateTimeField(verbose_name='last login', auto_now=True)
-	
-#     is_super = models.BooleanField(default=False)
-#     is_owner = models.BooleanField(default=False)
-#     status = models.BooleanField(default=True)
-
-#     USERNAME_FIELD = 'email'
-#     REQUIRED_FIELDS = []
-
-#     objects = CustomUserManager()
-
-#     def __str__(self):
-#         return self.email
-
-#     def get_full_name(self):
-#         return self.first_name + ' ' + self.last_name
+    OptionName = models.CharField(max_length=50)
+    AtSetPcr = models.BooleanField(blank=True,null=True, default=False)
+    PcrStopLoss = models.FloatField(blank=True,null=True)
+    LivePcr = models.FloatField(blank=True, default=0)
+    
+    class Meta:
+        db_table = 'pcr_options'

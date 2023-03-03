@@ -11,11 +11,31 @@
   <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
   <!-- MDB -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.1.0/mdb.min.css" rel="stylesheet" />
-  <title>Document</title>
+  <title>Home</title>
+  <style>
+    ::-webkit-scrollbar{ 
+      width: 10px;
+    }
+    ::-webkit-scrollbar-track{ 
+      background: #1c1d1d;
+    }
+    ::-webkit-scrollbar-thumb{ 
+      background: #b9b7bd;
+      border-radius: 50px;
+    }
+  </style>
 </head>
 
 <body>
-  <h2>NSE</h2>
+
+  <nav class="navbar navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">NSE</a>
+      <a href="{% url 'nse_app:settings' %}"><i class="fas fa-cog fa-lg" style="padding-right: 25px;"></i></a>
+    </div>
+  </nav>
+  <br>
+
   <table class="table table-sm">
     <thead class="bg-light">
       <tr>
@@ -37,7 +57,13 @@
     </thead>
     <tbody>
       {% for i in data %}
-      <tr>
+      <tr {% if i.status == 'BUY' %} style="background-color: #9999ff;" {% endif %}
+      
+      {% if i.today == 'True' %}
+      style="background-color: #b3c6ff;"
+      {% endif %}
+        
+      >
 
         <td>
           <p class="fw-bold mb-1">
@@ -121,10 +147,28 @@
         <td>
           <p class="fw-normal mb-1">NIFTY PE</p>
         </td>
+        {% elif i.percentage_id == 6 %}
+        <td>
+          <p class="fw-normal mb-1">BANKNIFTY PCR CE</p>
+        </td>
+        {% elif i.percentage_id == 9 %}
+        <td>
+          <p class="fw-normal mb-1">BANKNIFTY PCR PE</p>
+        </td>
+        {% elif i.percentage_id == 8 %}
+        <td>
+          <p class="fw-normal mb-1">NIFTY PCR CE</p>
+        </td>
         {% elif i.percentage_id == 5 %}
         <td>
           <p class="fw-normal mb-1">
-            {{ i.stock_name }}
+            {{ i.stock_name }} CE
+          </p>
+        </td>
+        {% elif i.percentage_id == 7 %}
+        <td>
+          <p class="fw-normal mb-1">
+            {{ i.stock_name }} PE
           </p>
         </td>
         {% endif %}

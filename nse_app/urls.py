@@ -7,8 +7,11 @@ app_name = "nse_app"
 
 urlpatterns = [
     path('home/', views.home, name = 'home'),
-    path('test/', views.print_hello, name = 'test'),
+    path('settings/', views.settings, name = 'settings'),
+    path('changesettings/', views.changesettings, name = 'changesettings'),
     path('pcr/', views.pcr, name = 'pcr'),
+    path('stock-data', views.stock, name = 'stock'),
+    path('test/', views.print_hello, name = 'test'),
     
     path('stocks', views.stock_details.as_view(), name = 'stock_detail'),
     

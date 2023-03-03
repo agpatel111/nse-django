@@ -6,14 +6,14 @@ from django.utils import timezone
 
 
 
-def Stock():
+def Stock_Put():
     try:
-        url = 'https://zerodha.harmistechnology.com/selectname'
+        url = 'https://zerodha.harmistechnology.com/selectnameput'
         response = requests.get(url).json()
         stock_name = response['data'][0]['name']
-        # stock_name = ''
+
         if stock_name == 'NO DATA':
-          print('Please Select Stock in CALL')
+          print('Please Select Stock in PUT')
         else:
             baseurl = "https://www.nseindia.com/"
             headers =  {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, '
@@ -59,7 +59,7 @@ def Stock():
             nseSetting = nse_setting.objects.values_list().values()
 
             for k in nseSetting:
-                if k['option'] == "STOCK CE":
+                if k['option'] == "STOCK PE":
                     OptionId_CALL = k['id']
 
             settings_url = 'https://zerodha.harmistechnology.com/setting_nse'
@@ -69,7 +69,7 @@ def Stock():
             settings_data_api = settings_data['data']
 
             for k in settings_data_api:
-                if k['option'] == "STOCK CE":
+                if k['option'] == "STOCK PE":
                     set_CALL_pcr = k['set_pcr']
                     profitPercentage_CALL = k['profit_percentage']
                     lossPercentage_CALL = k['loss_percentage']    
@@ -83,7 +83,7 @@ def Stock():
                 stock_details = [{'percentage_id':0, "status": '', "call_put":"",'buy_time':yesterday }]
 
             for i in stock_details:
-                if i['percentage_id'] == OptionId_CALL and i['status'] == 'BUY' and i['call_put'] == "CALL" :
+                if i['percentage_id'] == OptionId_CALL and i['status'] == 'BUY' and i['call_put'] == "PUT" :
                     setBuyCondition_CALL = False
                     break
                 else:
@@ -93,26 +93,27 @@ def Stock():
             if setBuyCondition_CALL == True :
                 if set_CALL_pcr < float(stock_pcr):
                     diffrent_data =( upside_first['strikePrice'] + downside_first['strikePrice'] ) / 2
-                    d_d = ((diffrent_data - downside_first['strikePrice']) / 2) + downside_first['strikePrice']
-                    if d_d <= livePrice and livePrice <= diffrent_data :
+                    d_d = ((diffrent_data - downside_first['strikePrice']) / 2) + diffrent_data
+                    
+                    if d_d <= livePrice :
                         strikePrice = downside_first['strikePrice']
-                        bdprice = downside_first['CE']['bidprice']
+                        bdprice = downside_first['PE']['bidprice']
                         sellPrice = '%.2f'% ((bdprice * profitPercentage_CALL) / 100 + bdprice)
                         stop_loss = '%.2f'% (bdprice - (bdprice * lossPercentage_CALL ) / 100)
 
-                        postData = {'stock_name': stock_name, "buy_price": bdprice, "base_strike_price":strikePrice, "live_Strike_price":livePrice, "sell_price": sellPrice, "stop_loseprice": stop_loss, 'percentage': OptionId_CALL, 'call_put':'CALL'}
-                        stock_detail.objects.create(status="BUY",buy_price = bdprice, base_strike_price=strikePrice, live_Strike_price=livePrice, live_brid_price=bdprice, sell_price= sellPrice ,stop_loseprice=stop_loss, percentage_id=OptionId_CALL, stock_name = stock_name, call_put ='CALL', buy_pcr=stock_pcr )
+                        postData = {'stock_name': stock_name, "buy_price": bdprice, "base_strike_price":strikePrice, "live_Strike_price":livePrice, "sell_price": sellPrice, "stop_loseprice": stop_loss, 'percentage': OptionId_CALL, 'call_put':'PUT'}
+                        stock_detail.objects.create(status="BUY",buy_price = bdprice, base_strike_price=strikePrice, live_Strike_price=livePrice, live_brid_price=bdprice, sell_price= sellPrice ,stop_loseprice=stop_loss, percentage_id=OptionId_CALL, stock_name = stock_name, call_put ='PUT', buy_pcr=stock_pcr )
                         print('SuccessFully Buy Stock: ',postData)
                     else:
-                        print(stock_name,'->',d_d, livePrice, diffrent_data)
+                        print(stock_name,'PUT','->',d_d, livePrice)
                 else:
-                    print('YOU CAN BUY STOCK OF', stock_name)
+                    print('YOU CAN BUY STOCK OF', stock_name, 'PUT')
             else:
-                print("CANI'T BUY YOU HAVE A STOCK")
+                print("CANI'T BUY YOU HAVE A STOCK OF", stock_name, 'PUT')
 
 
             for sell in stock_details:
-                if sell['status'] == 'BUY' and sell['percentage_id'] == OptionId_CALL and sell['call_put'] == 'CALL':
+                if sell['status'] == 'BUY' and sell['percentage_id'] == OptionId_CALL and sell['call_put'] == 'PUT':
                     if sell['stock_name'] != stock_name:
                         stock_name = sell['stock_name']
                         stock_url_sell = 'https://www.nseindia.com/api/option-chain-equities?symbol=' + stock_name
@@ -125,7 +126,7 @@ def Stock():
                             buy_pricee = sell['buy_price'] 
                             sell_Pricee = sell['sell_price']
                             stop_Losss = sell['stop_loseprice']
-                            liveBidPrice_sell = filters['CE']['bidprice']
+                            liveBidPrice_sell = filters['PE']['bidprice']
                             stock_ID = sell['id']
                             sell_time = timezone.now()
 
@@ -137,15 +138,14 @@ def Stock():
                                 stock_detail.objects.filter(id=stock_ID).update(status = 'SELL', exit_price = liveBidPrice_sell, sell_buy_time=sell_time, final_status = final_status_admin_call, exit_pcr= stock_pcr )
                                 print("SuccessFully SELL STOCK OF CALL")
                     
-                            print(stock_name, 'CALL---> ' ,'buy_pricee:', buy_pricee, 'sell_Pricee:', sell_Pricee, 'liveBidPrice:', liveBidPrice_sell, 'stop_Losss:', stop_Losss)
+                            print(stock_name, 'PUT---> ' ,'buy_pricee:', buy_pricee, 'sell_Pricee:', sell_Pricee, 'liveBidPrice:', liveBidPrice_sell, 'stop_Losss:', stop_Losss)
                             if sell_Pricee <= liveBidPrice_sell :
                                 final_statuss = "PROFIT"
                                 stock_detail.objects.filter(id=stock_ID).update(status = 'SELL', exit_price = liveBidPrice_sell, sell_buy_time=sell_time, final_status = final_statuss, admin_call= True, exit_pcr= stock_pcr)
-                                print("SuccessFully SELL STOCK OF CALL")
+                                print("SuccessFully SELL STOCK OF", stock_name, "PUT")
                             if stop_Losss > liveBidPrice_sell:
                                 final_statuss = "LOSS"
                                 stock_detail.objects.filter(id=stock_ID).update(status = 'SELL', exit_price = liveBidPrice_sell, sell_buy_time=sell_time, final_status = final_statuss,admin_call = True, exit_pcr= stock_pcr )
-                                print("SuccessFully SELL STOCK OF CALL")
-    except Exception as e:
-        print('Error-->', e)
-        print("Connection refused by the server........................................ STOCK")
+                                print("SuccessFully SELL STOCK OF", stock_name, "PUT")
+    except:
+        print("Connection refused by the server........................................ STOCK PUT")
