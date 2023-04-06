@@ -20,6 +20,10 @@ call_or_put = (
     ('NA', 'NA'),
     )
 
+option_names = (
+    ('NIFTY', 'NIFTY'),
+    ('BANKNIFTY', 'BANKNIFTY'),
+    )
 # Create your models here.
 
 
@@ -30,6 +34,7 @@ class nse_setting(models.Model):
     loss_percentage = models.IntegerField()
     set_pcr = models.FloatField()
     baseprice_plus = models.IntegerField()
+    you_can_buy = models.BooleanField(null=True, blank=True)
 
     def __str__(self):
         return self.option
@@ -84,7 +89,8 @@ class pcr_stock_name(models.Model):
 class live(models.Model):
     live_banknifty = models.BooleanField(default=False)
     live_nifty = models.BooleanField(default=False)
-    live_stock = models.BooleanField(default=False)
+    live_stock_ce = models.BooleanField(default=False)
+    live_stock_pe = models.BooleanField(default=False)
     live_set = models.BooleanField(default=False)
 
     class Meta:
@@ -99,3 +105,30 @@ class pcr_option(models.Model):
     
     class Meta:
         db_table = 'pcr_options'
+
+class stock_for_buy(models.Model):
+    stocks_name = models.CharField(max_length = 100)
+    call_or_put = models.CharField(max_length=50, blank=True, choices=call_or_put)
+    difference_ce_pe = models.IntegerField(blank=True, null=True)
+    PE_side_persnt = models.FloatField(blank=True, null=True)
+    CE_side_persnt = models.FloatField(blank=True, null=True)
+
+    class Meta:
+        db_table = 'stock_for_buy'
+
+class pcr_values(models.Model):
+    option_name = models.CharField(max_length=50, choices=option_names)
+    pcr_value = models.FloatField(blank=True, default=0)
+    timestamp = models.DateTimeField(auto_now=True, null=True)
+
+    def __str__(self):
+        return self.option_name
+
+    class Meta:
+        db_table = 'pcr_values'
+
+class extra_setting(models.Model):
+    pcr_isupdating = models.BooleanField(default=False)
+
+    class Meta:
+        db_table = 'extra_setting'

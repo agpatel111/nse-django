@@ -12,26 +12,41 @@
   <!-- MDB -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.1.0/mdb.min.css" rel="stylesheet" />
   <title>Home</title>
+  
   <style>
-    ::-webkit-scrollbar{ 
-      width: 10px;
-    }
-    ::-webkit-scrollbar-track{ 
-      background: #1c1d1d;
-    }
-    ::-webkit-scrollbar-thumb{ 
-      background: #b9b7bd;
-      border-radius: 50px;
+    body{
+      overflow-y: scroll; 
     }
   </style>
+
+  <!-- <style>
+    html {
+      overflow-x: hidden;
+      margin-right: calc(-1 * (100vw - 100%));
+    }
+  </style> -->
 </head>
 
 <body>
 
   <nav class="navbar navbar-light bg-light">
     <div class="container-fluid">
-      <a class="navbar-brand" href="#">NSE</a>
-      <a href="{% url 'nse_app:settings' %}"><i class="fas fa-cog fa-lg" style="padding-right: 25px;"></i></a>
+      <a class="navbar-brand" href="#">Home</a>
+      <div class="dropdown">
+      <i id="dropdownMenuButton"
+        type="button"
+        data-mdb-toggle="dropdown"
+        aria-expanded="false" 
+        class="fas fa-cog fa-lg dropdown-toggle" 
+        style="padding-right: 25px;">
+      </i>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          <li><a class="dropdown-item" href="{% url 'nse_app:home' %}">Home</a></li>
+          <li><a class="dropdown-item" href="{% url 'nse_app:pcrvalues' %}">Pcr Values</a></li>
+          <li><a class="dropdown-item" href="{% url 'nse_app:settings' %}">Settings</a></li>
+          <li><a class="dropdown-item" href="{% url 'nse_app:pcrUpdate' %}">Update Pcr</a></li>
+        </ul>
+    </div>
     </div>
   </nav>
   <br>
@@ -53,6 +68,7 @@
         <th>Option</th>
         <th>Status</th>
         <th>Final Status</th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
@@ -171,6 +187,18 @@
             {{ i.stock_name }} PE
           </p>
         </td>
+        {% elif i.percentage_id == 11 %}
+        <td>
+          <p class="fw-normal mb-1">
+            {{ i.stock_name }} PCR CE
+          </p>
+        </td>
+        {% else %}
+        <td>
+          <p class="fw-normal mb-1">
+            {{ i.percentage_id }}
+          </p>
+        </td>
         {% endif %}
 
         <td>
@@ -196,7 +224,11 @@
           </span>
         </td>
         {% endif %}
-
+        <td>
+          <p class="mb-1" style="margin-right: 10px;">
+            <a href="{% url 'nse_app:deletestock' i.id %}"><i class="fas fa-trash" style="color: red;"></i></a>
+          </p>
+        </td>
       </tr>
       {% endfor %}
     </tbody>

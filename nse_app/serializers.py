@@ -6,8 +6,8 @@ from .models import *
 class settingSerializer(serializers.ModelSerializer):
     class Meta:
         model = nse_setting
-        fields = "__all__"
-        # exclude = ['sell_buy_time',]
+        # fields = "__all__"
+        exclude = ['you_can_buy', 'id']
 
 class stockListSerializer(serializers.ModelSerializer):
     percentage = settingSerializer()

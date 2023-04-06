@@ -14,6 +14,11 @@
 
   <script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" crossorigin="anonymous"></script>
   <title>Settings</title>
+  <style>
+    body{
+      overflow-y: scroll; 
+    }
+  </style>
 </head>
 
 <body>
@@ -21,7 +26,21 @@
   <nav class="navbar navbar-light bg-light">
     <div class="container-fluid">
       <a class="navbar-brand" href="#">Settings</a>
-      <a href="{% url 'nse_app:home' %}"><i class="fas fa-home fa-lg" style="padding-right: 25px;"></i></a>
+      <div class="dropdown">
+      <i id="dropdownMenuButton"
+        type="button"
+        data-mdb-toggle="dropdown"
+        aria-expanded="false" 
+        class="fas fa-cog fa-lg dropdown-toggle" 
+        style="padding-right: 25px;">
+      </i>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          <li><a class="dropdown-item" href="{% url 'nse_app:home' %}">Home</a></li>
+          <li><a class="dropdown-item" href="{% url 'nse_app:pcrvalues' %}">Pcr Values</a></li>
+          <li><a class="dropdown-item" href="{% url 'nse_app:settings' %}">Settings</a></li>
+          <li><a class="dropdown-item" href="{% url 'nse_app:pcrUpdate' %}">Update Pcr</a></li>
+        </ul>
+    </div>
     </div>
   </nav>
   <br>
@@ -29,8 +48,10 @@
   <table class="table table-sm">
     <thead class="bg-light">
       <tr>
-        <th>Banknifty Live</th>
-        <th>Nifty Live</th>
+        <th>Banknifty</th>
+        <th>Nifty</th>
+        <th>Stock Call</th>
+        <th>Stock Put</th>
       </tr>
     </thead>
     <tbody>
@@ -56,6 +77,26 @@
                 class="btn btn-danger"
                 id="NiftyRed"
                 {% endif %} >Nifty</button>
+            </td>
+            <td>
+                <button type="button"
+                {% if i.live_stock_ce %}
+                class="btn btn-success"
+                id="StockCEGreen"
+                {% else %}
+                class="btn btn-danger"
+                id="StockCERed"
+                {% endif %} >Stock CAll</button>
+            </td>
+            <td>
+                <button type="button"
+                {% if i.live_stock_pe %}
+                class="btn btn-success"
+                id="StockPEGreen"
+                {% else %}
+                class="btn btn-danger"
+                id="StockPERed"
+                {% endif %} >Stock PUT</button>
             </td>
         </tr>
         {% endfor %}
@@ -113,6 +154,55 @@
             }
         })
     })
+    
+    $("#StockCEGreen").click(function() {
+      data = { name: 'StockCe', live: 'True' }
+      $.ajax({
+          url: "{% url 'nse_app:changesettings' %}",
+          method: "POST",
+          data: data,
+          success: function(data){ 
+              location.reload()
+          }
+      })
+    })
+
+    $("#StockCERed").click(function() {
+      data = { name: 'StockCe', live: 'False' }
+      $.ajax({
+          url: "{% url 'nse_app:changesettings' %}",
+          method: "POST",
+          data: data,
+          success: function(data){ 
+              location.reload()
+          }
+      })
+    })
+
+    $("#StockPEGreen").click(function() {
+      data = { name: 'StockPe', live: 'True' }
+      $.ajax({
+          url: "{% url 'nse_app:changesettings' %}",
+          method: "POST",
+          data: data,
+          success: function(data){ 
+              location.reload()
+          }
+      })
+    })
+
+    $("#StockPERed").click(function() {
+      data = { name: 'StockPe', live: 'False' }
+      $.ajax({
+          url: "{% url 'nse_app:changesettings' %}",
+          method: "POST",
+          data: data,
+          success: function(data){ 
+              location.reload()
+          }
+      })
+    })
+
   </script>
   <!-- MDB -->
   <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.1.0/mdb.min.js"></script>

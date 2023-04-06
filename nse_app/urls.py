@@ -1,17 +1,20 @@
 from django.urls import path
 from . import views
 from nse_app.Scheduler import Nifty
-# from knox import views as knox_views
 
 app_name = "nse_app"
 
 urlpatterns = [
+    path('', views.home, name = 'home'),
     path('home/', views.home, name = 'home'),
+    path('deletestock/<int:id>', views.deleteStock, name = 'deletestock'),
+    path('pcrvalues/', views.PcrValues, name = 'pcrvalues'),
     path('settings/', views.settings, name = 'settings'),
     path('changesettings/', views.changesettings, name = 'changesettings'),
-    path('pcr/', views.pcr, name = 'pcr'),
-    path('stock-data', views.stock, name = 'stock'),
-    path('test/', views.print_hello, name = 'test'),
+    path('pcr/', views.pcrUpdate, name = 'pcrUpdate'),
+    path('getStock/<slug:slug>', views.getStock, name = 'getStock'),
+    path('api/stockData', views.stockData, name = 'apistock'),
+    path('print_hello/', views.print_hello, name = 'print_hello'),
     
     path('stocks', views.stock_details.as_view(), name = 'stock_detail'),
     
