@@ -1,9 +1,9 @@
+from .models import *
+from .serializers import *
 from django.shortcuts import render, redirect
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .models import *
-from .serializers import *
 import datetime
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated 
@@ -14,11 +14,30 @@ from datetime import datetime
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse, HttpResponse
 from datetime import date, datetime
-from nse_app.Scheduler.BankNifty import BANKNIFTY
 from nse_app.services import StockView
 from nse_app.Scheduler.CoustomFun import Coustom
 
+
 def home(request):
+    # live = LiveData.objects.all().order_by('-created_at').values()
+
+    # live = live[0:5]
+    # live = live[::-1]
+    # # open = live[0]
+    # # close = live[4]
+    # # high = max(live[1]['live_price'], live[2]['live_price'], live[3]['live_price'])
+    # # low = min(live[1]['live_price'], live[2]['live_price'], live[3]['live_price'])
+    # candle = []
+    # for val in live:
+    #     candle.append(val['live_price'])
+    
+    # High = max(candle)
+    # Low = min(candle)
+    # Open = candle[0]
+    # Close = candle[4]
+    # print(High,Low, Open, Close)
+    # # for s in live:
+    # #     print(s['live_price'])
     data = stock_detail.objects.all().order_by("-buy_time").values()
 
     dataa = []
@@ -39,7 +58,7 @@ def deleteStock(request, id):
     return redirect("nse_app:home")
 
 
-def PcrValues(request):
+def PcrValue(request):
     data = pcr_values.objects.all().order_by("-timestamp")
     return render(request, 'PcrValues.html', {'data': data})
 

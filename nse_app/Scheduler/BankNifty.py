@@ -4,9 +4,6 @@ import datetime
 import requests
 import json
 from datetime import date, datetime, timedelta
-import pyotp
-from smartapi import SmartConnect
-import pandas as pd
 from rich.console import Console
 from .CoustomFun import Coustom
 from .SellFunction import sellFunOption
@@ -18,7 +15,7 @@ consoleRed = Console(style='red')
 
 def BankniftyApiFun():
     global api_data, livePrice, timestamp, filteredData, PEMax, CEMax, down_price, up_price, downSliceList, upSliceList, pcr, base_Price_down, base_Price_up
-    global up_first_total_oi, down_first_total_oi, CEMaxValue, PEMaxValue, cepeDiffrent
+    global up_first_total_oi, down_first_total_oi, CEMaxValue, PEMaxValue
     
     
     headers =  {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, '
@@ -51,10 +48,6 @@ def BankniftyApiFun():
 
     pcr = Coustom.pcrValue(api_data)
             
-    for pe in PEMax:
-        cepeDiffrent = pe['PE']['openInterest'] + pe['PE']['changeinOpenInterest'] - (pe['CE']['openInterest'] + pe['CE']['changeinOpenInterest'])
-    cepeDiffrent = cepeDiffrent
-
 
     base_Price_down = []
     down_first_total_oi = ((down_price[-1]['PE']['changeinOpenInterest'] + down_price[-1]['PE']['openInterest']) - (down_price[-1]['CE']['changeinOpenInterest'] + down_price[-1]['CE']['openInterest']))
@@ -166,37 +159,76 @@ def SettingFun():
 
 def BANKNIFTY():
     global api_data, livePrice, timestamp, filteredData, PEMax, CEMax, down_price, up_price, downSliceList, upSliceList, pcr, base_Price_down, base_Price_up
-    global up_first_total_oi, down_first_total_oi, CEMaxValue, PEMaxValue, cepeDiffrent
+    global up_first_total_oi, down_first_total_oi, CEMaxValue, PEMaxValue
     
     try:
         BankniftyApiFun()
 
         SettingFun()
+        
+        if len(PEMax) != 0:
+            for nbpd in PEMax:
+                if setBuyCondition_CALL == True:
+                    base_zone_obj = BaseZoneBanknifty.objects.all().values() 
+                    
+                    liveDbPrice = LiveDataBankNifty.objects.all().order_by('-id').values()
+                    liveDbPrice = liveDbPrice[0]
+                    
+                    new_strike_price_CE_ = nbpd['strikePrice']
+                    new_strike_price_plus_CE_ = new_strike_price_CE_ + basePlus_CALL
+                    new_strike_price_minus_CE_ = new_strike_price_plus_CE_ - 15
+                    
+                    if len(base_zone_obj) == 0:
+                        print('-------------------------------------------------------------------> BANKNIFTY CE:', new_strike_price_minus_CE_, '<', livePrice, '<', new_strike_price_plus_CE_)
+                        if new_strike_price_minus_CE_ < livePrice < new_strike_price_plus_CE_:
+                            BaseZoneBanknifty.objects.create(in_basezone = True, base_price = new_strike_price_plus_CE_ , stop_loss_price=new_strike_price_minus_CE_)
+                    else:
+                        consoleBlue.print('------------ BANKNIFTY IN  BUYZONE-------------------')
+                        base_zone_obj = base_zone_obj[0]
+                        base_price = base_zone_obj['base_price']
+                        if liveDbPrice['in_basezone'] == True:
+                            last_live_price = liveDbPrice['live_price']
+                            
+                            if base_price < last_live_price:
+                                BidPrice_CE = nbpd['CE']['bidprice']
+                                sellPrice_CE = '%.2f'% ((BidPrice_CE * profitPercentage_CALL) / 100 + BidPrice_CE)
+                                stop_loss_CE = '%.2f'% (BidPrice_CE - (BidPrice_CE * lossPercentage_CALL ) / 100)
+                                strikePrice_CE = nbpd['strikePrice']
+                                # <------------------------------  ADD DATA TO DATABASE  ---------------------------------->
+                                postData = { "buy_price": BidPrice_CE, "base_strike_price":strikePrice_CE, "live_Strike_price":livePrice, "sell_price": sellPrice_CE, "stop_loseprice": stop_loss_CE, 'percentage': OptionId_CALL, 'call_put': "CALL"}
+                                stock_detail.objects.create(status="BUY",buy_price = BidPrice_CE, base_strike_price=strikePrice_CE, live_Strike_price=livePrice, live_brid_price=BidPrice_CE, sell_price= sellPrice_CE ,stop_loseprice=stop_loss_CE, percentage_id=OptionId_CALL , call_put = "CALL", buy_pcr = '%.2f'% (pcr) )
+                                print('SuccessFully Buy IN BANKNIFTY CALL: ',postData)                
+                                BaseZoneBanknifty.objects.all().delete()
+                                consoleGreen.print('SuccessFully BUY---------------------------------->', livePrice)
+                            else:
+                                BaseZoneBanknifty.objects.all().delete()
+                        
 
-        ## CALL BUY
-        if len(base_Price_down) != 0:
-            for bpd in base_Price_down:
-                if setOneStock_CALL == True:
-                    if setBuyCondition_CALL == True:
-                        if pcr >= set_CALL_pcr:
-                            new_strike_price_CE = bpd['strikePrice']
-                            new_strike_price_plus_CE = new_strike_price_CE + basePlus_CALL
-                            new_strike_price_minus_CE = new_strike_price_plus_CE - 15
-                            print('-------------------------------------------------------------------> BANKNIFTY CE:', new_strike_price_minus_CE, '<', livePrice, '<', new_strike_price_plus_CE)
-                            if new_strike_price_minus_CE <= livePrice <= new_strike_price_plus_CE:
-                                # if abs(up_first_total_oi) <= 50000:
-                                    BidPrice_CE = bpd['CE']['bidprice']
-                                    squareoff_CE = '%.2f'% (( BidPrice_CE * profitPercentage_CALL ) / 100)
-                                    stoploss_CE = '%.2f'% ((BidPrice_CE * lossPercentage_CALL ) / 100)
-                                    sellPrice_CE = '%.2f'% ((BidPrice_CE * profitPercentage_CALL) / 100 + BidPrice_CE)
-                                    stop_loss_CE = '%.2f'% (BidPrice_CE - (BidPrice_CE * lossPercentage_CALL ) / 100)
-                                    strikePrice_CE = bpd['strikePrice']
-                                    # <------------------------------  ADD DATA TO DATABASE  ---------------------------------->
-                                    postData = { "buy_price": BidPrice_CE, "base_strike_price":strikePrice_CE, "live_Strike_price":livePrice, "sell_price": sellPrice_CE, "stop_loseprice": stop_loss_CE, 'percentage': OptionId_CALL, 'call_put': "CALL"}
-                                    if live_call == True:
-                                        sellFunOption(strikePrice_CE, BidPrice_CE, squareoff_CE, stoploss_CE, OptionId_CALL, lot_size_CALL)
-                                    stock_detail.objects.create(status="BUY",buy_price = BidPrice_CE, base_strike_price=strikePrice_CE, live_Strike_price=livePrice, live_brid_price=BidPrice_CE, sell_price= sellPrice_CE ,stop_loseprice=stop_loss_CE, percentage_id=OptionId_CALL , call_put = "CALL", buy_pcr = '%.2f'% (pcr) )
-                                    print('SuccessFully Buy IN BANKNIFTY CALL: ',postData)                
+        # ## CALL BUY
+        # if len(base_Price_down) != 0:
+        #     for bpd in base_Price_down:
+        #         if setOneStock_CALL == True:
+        #             if setBuyCondition_CALL == True:
+        #                 if pcr >= set_CALL_pcr:
+        #                     new_strike_price_CE = bpd['strikePrice']
+        #                     new_strike_price_plus_CE = new_strike_price_CE + basePlus_CALL
+        #                     new_strike_price_minus_CE = new_strike_price_plus_CE - 15
+        #                     print('-------------------------------------------------------------------> BANKNIFTY CE:', new_strike_price_minus_CE, '<', livePrice, '<', new_strike_price_plus_CE)
+        #                     if new_strike_price_minus_CE <= livePrice <= new_strike_price_plus_CE:
+        #                         # if abs(up_first_total_oi) <= 50000:
+        #                             BidPrice_CE = bpd['CE']['bidprice']
+        #                             squareoff_CE = '%.2f'% (( BidPrice_CE * profitPercentage_CALL ) / 100)
+        #                             stoploss_CE = '%.2f'% ((BidPrice_CE * lossPercentage_CALL ) / 100)
+        #                             sellPrice_CE = '%.2f'% ((BidPrice_CE * profitPercentage_CALL) / 100 + BidPrice_CE)
+        #                             stop_loss_CE = '%.2f'% (BidPrice_CE - (BidPrice_CE * lossPercentage_CALL ) / 100)
+        #                             strikePrice_CE = bpd['strikePrice']
+        #                             # <------------------------------  ADD DATA TO DATABASE  ---------------------------------->
+        #                             postData = { "buy_price": BidPrice_CE, "base_strike_price":strikePrice_CE, "live_Strike_price":livePrice, "sell_price": sellPrice_CE, "stop_loseprice": stop_loss_CE, 'percentage': OptionId_CALL, 'call_put': "CALL"}
+        #                             ## LIVE BUY
+        #                             if live_call == True:
+        #                                 sellFunOption(strikePrice_CE, BidPrice_CE, squareoff_CE, stoploss_CE, OptionId_CALL, lot_size_CALL)
+        #                             stock_detail.objects.create(status="BUY",buy_price = BidPrice_CE, base_strike_price=strikePrice_CE, live_Strike_price=livePrice, live_brid_price=BidPrice_CE, sell_price= sellPrice_CE ,stop_loseprice=stop_loss_CE, percentage_id=OptionId_CALL , call_put = "CALL", buy_pcr = '%.2f'% (pcr) )
+        #                             print('SuccessFully Buy IN BANKNIFTY CALL: ',postData)                
         
         ## PUT BUY
         if len(base_Price_up) != 0:
@@ -219,10 +251,11 @@ def BANKNIFTY():
                                     # <------------------------------  ADD DATA TO DATABASE  ---------------------------------->
                                     stock_detail.objects.create(status="BUY",buy_price = BidPrice_PUT,live_brid_price=BidPrice_PUT , base_strike_price=strikePrice_PUT, live_Strike_price=livePrice, sell_price= sellPrice_PUT ,stop_loseprice=stop_loss_PUT, percentage_id=OptionId_PUT , call_put = "PUT", buy_pcr = '%.2f'% (pcr) )
                                     postData = { "buy_price": BidPrice_PUT, "base_strike_price":strikePrice_PUT, "live_Strike_price":livePrice, "sell_price": sellPrice_PUT, "stop_loseprice": stop_loss_PUT, 'percentage': OptionId_PUT, 'call_put': "PUT"}
+                                    ## LIVE BUY
                                     if live_call == True:
                                         sellFunOption(strikePrice_PUT, BidPrice_PUT, squareoff_PUT, stoploss_PUT, OptionId_PUT, lot_size_PUT)
-
                                     print('SuccessFully Buy IN BANKNIFTY PUT: ',postData)
+
 
         
         for mx in PEMax:
@@ -309,7 +342,6 @@ def BANKNIFTY():
                             final_statuss = "LOSS"
                             stock_detail.objects.filter(id=stock_ID).update(status = 'SELL', exit_price = liveBidPrice, sell_buy_time=sell_time, final_status = final_statuss,admin_call = True, exit_pcr= '%.2f'% (pcr) )
                             print("SuccessFully SELL STOCK OF CALL")
-                        # pprint.pprint(stock_ID)
             
             ## PUT SELL
             if sell['status'] == 'BUY' and sell['percentage_id'] == OptionId_PUT and sell['call_put'] == 'PUT':
@@ -369,7 +401,6 @@ def BANKNIFTY():
                             print("SuccessFully SELL STOCK OF BANKNIFTY BASE")
                             pcr_option.objects.filter(id=PcrObj_Call_ID).update(AtSetPcr = False)
                             stock_detail.objects.filter(id=stock_ID_BASE).update(status = 'SELL', exit_price = liveBidPrice_BASE, sell_buy_time=sell_time_BASE, final_status = final_status_admin_BASE, admin_call = True, exit_pcr= '%.2f'% (pcr))
-                # pcr_option.objects.filter(id=1).update(banknifty_live_pcr = '%.2f'% (pcr))
 
             ## PCR PUT SELL
             if sell['status'] == 'BUY' and sell['percentage_id'] == OptionId_PCR_PUT and sell['call_put'] == 'PUT':
@@ -404,143 +435,4 @@ def BANKNIFTY():
     except Exception as e:
         consoleRed.print('Error BankNifty -->', e)
         consoleRed.print("Connection refused by the server............................................. BANKNIFTY")
-
-
-
-# def sellFun(strikePrice, BidPrice, squareoff, stoploss, OptionId, lots):
-   
-#     base_strike_price_sm = float(strikePrice)
-#     buy_price_sm = str(BidPrice)
-#     squareoff_sm = squareoff
-#     stoploss_sm = stoploss
-#     percentions_sm = OptionId
-#     lot_size = lots
-
-#     username = 'H117838'
-#     apikey = 'SqtdCpAg'
-#     pwd = '4689'
-#     totp = pyotp.TOTP("K7QDKSEXWD7KRO7EVQCUHTFK2U").now()
-#     obj = SmartConnect(api_key=apikey)
-#     dataa = obj.generateSession(username, pwd, totp)
-
-#     def place_order_pcr(token, symbol, qty, exch_seg, buy_sell, ordertype, price, variety='ROBO', triggerprice=5):
-#         total_qty = float(qty) * lot_size
-#         total_qty = int(total_qty)
-#         total_qty = str(total_qty)
-#         try:
-#             orderparams = {
-#                 "variety": 'NORMAL',
-#                 "tradingsymbol": symbol,
-#                 "symboltoken": token,
-#                 "transactiontype": 'BUY',
-#                 'exchange': 'NFO',
-#                 "ordertype": 'LIMIT',
-#                 "producttype": 'CARRYFORWARD',
-#                 "duration": "DAY",
-#                 "price": buy_price_sm,    
-#                 "squareoff": '0',
-#                 "stoploss": '0',
-#                 "quantity":total_qty,
-#             }
-#             print(orderparams)
-#             orderId = obj.placeOrder(orderparams)
-#             print("The order id is: {}".format(orderId))
-#             # stock_detail.objects.filter(id = get_id).update(orderid = orderId)
-#         except Exception as e:
-#             print(
-#                 "Order placement failed: {}".format(e.message))                   
-
-#     def place_order(token, symbol, qty, buy_sell, ordertype, price, variety='ROBO', exch_seg='NFO', triggerprice=5):
-#         total_qty = float(qty) * lot_size
-#         total_qty = int(total_qty)
-#         total_qty = str(total_qty)
-#         try:
-#             orderparams = {
-#                 "variety": 'ROBO',
-#                 "tradingsymbol": symbol,
-#                 "symboltoken": token,
-#                 "transactiontype": 'BUY',
-#                 'exchange': 'NFO',
-#                 "ordertype": 'LIMIT',
-#                 "producttype": 'BO',
-#                 "duration": "DAY",
-#                 "price": buy_price_sm,
-#                 "squareoff": squareoff_sm,
-#                 "stoploss": stoploss_sm,
-#                 "quantity": total_qty,
-#                 "trailingStopLoss": "5",
-#             }
-#             print(orderparams)
-#             orderId = obj.placeOrder(orderparams)
-#             print("The order id is: {}".format(orderId))
-
-#         except Exception as e:
-#             print(
-#                 "Order placement failed: {}".format(e.message))
-
-    
-#     url = 'https://margincalculator.angelbroking.com/OpenAPI_File/files/OpenAPIScripMaster.json'
-#     d = requests.get(url).json()
-#     token_df = pd.DataFrame.from_dict(d)
-#     token_df['expiry'] = pd.to_datetime(
-#         token_df['expiry']).apply(lambda x: x.date())
-#     token_df = token_df.astype({'strike': float})
-
-#     def getTokenInfo(symbol, exch_seg='NSE', instrumenttype='OPTIDX', strike_price='', pe_ce='CE', expiry_day=None):
-#         df = token_df
-#         strike_price = strike_price*100
-#         if exch_seg == 'NSE':
-#             eq_df = df[(df['exch_seg'] == 'NSE')]
-#             return eq_df[eq_df['name'] == symbol]
-#         elif exch_seg == 'NFO' and ((instrumenttype == 'FUTSTK') or (instrumenttype == 'FUTIDX')):
-#             return df[(df['exch_seg'] == 'NFO') & (df['instrumenttype'] == instrumenttype) & (df['name'] == symbol)].sort_values(by=['expiry'])
-#         elif exch_seg == 'NFO' and (instrumenttype == 'OPTSTK' or instrumenttype == 'OPTIDX'):
-#             return df[(df['exch_seg'] == 'NFO') & (df['expiry'] == expiry_day) & (df['instrumenttype'] == instrumenttype) & (df['name'] == symbol) & (df['strike'] == strike_price) & (df['symbol'].str.endswith(pe_ce))].sort_values(by=['expiry'])
-
-#     a = date(2023, 4, 6)
-
-#     if percentions_sm == 3:
-#         symbol = 'BANKNIFTY'
-#         pe_strike_symbol = getTokenInfo(
-#             symbol, 'NFO', 'OPTIDX', base_strike_price_sm, 'PE', a).iloc[0]
-#         place_order_pcr(pe_strike_symbol['token'], pe_strike_symbol['symbol'],
-#                     pe_strike_symbol['lotsize'], 'BUY', 'MARKET', 0, 'NORMAL', 'NFO')
-
-#     elif percentions_sm == 1:
-#         symbol = 'BANKNIFTY'
-
-#         ce_strike_symbol = getTokenInfo(
-#             symbol, 'NFO', 'OPTIDX', base_strike_price_sm, 'CE', a).iloc[0]
-#         place_order_pcr(ce_strike_symbol['token'], ce_strike_symbol['symbol'],
-#                     ce_strike_symbol['lotsize'], 'SELL', 'MARKET', 0, 'NORMAL', 'NFO')
-
-#     elif percentions_sm == 4:
-#         symbol = 'NIFTY'
-#         qty = 25
-#         pe_strike_symbol = getTokenInfo(
-#             symbol, 'NFO', 'OPTIDX', base_strike_price_sm, 'PE', a).iloc[0]
-#         place_order(pe_strike_symbol['token'], pe_strike_symbol['symbol'],
-#                     pe_strike_symbol['lotsize'], 'SELL', 'MARKET', 0, 'NORMAL', 'NFO', qty)
-
-#     elif percentions_sm == 2:
-#         symbol = 'NIFTY'
-#         ce_strike_symbol = getTokenInfo(
-#             symbol, 'NFO', 'OPTIDX', base_strike_price_sm, 'CE', a).iloc[0]
-#         place_order(ce_strike_symbol['token'], ce_strike_symbol['symbol'],
-#                     ce_strike_symbol['lotsize'], 'SELL', 'MARKET', 0, 'NORMAL', 'NFO')
-
-#     ## place_order_pcr
-#     elif percentions_sm == 6:
-#         symbol = 'BANKNIFTY'
-#         ce_strike_symbol = getTokenInfo(
-#             symbol, 'NFO', 'OPTIDX', base_strike_price_sm, 'CE', a).iloc[0]
-#         place_order_pcr(ce_strike_symbol['token'], ce_strike_symbol['symbol'],
-#                     ce_strike_symbol['lotsize'], 'SELL', 'MARKET', 0, 'NORMAL', 'NFO')
-
-#     elif percentions_sm == 9:
-#         symbol = 'BANKNIFTY'
-#         ce_strike_symbol = getTokenInfo(
-#             symbol, 'NFO', 'OPTIDX', base_strike_price_sm, 'PE', a).iloc[0]
-#         place_order_pcr(ce_strike_symbol['token'], ce_strike_symbol['symbol'],
-#                     ce_strike_symbol['lotsize'], 'SELL', 'MARKET', 0, 'NORMAL', 'NFO')
 

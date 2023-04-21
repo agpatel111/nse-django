@@ -132,3 +132,35 @@ class extra_setting(models.Model):
 
     class Meta:
         db_table = 'extra_setting'
+        
+class BaseZoneBanknifty(models.Model):
+    in_basezone = models.BooleanField(default=False, null=True, blank=True)
+    base_price = models.FloatField(null=True, blank=True)
+    stop_loss_price = models.FloatField(null=True, blank=True)
+
+    class Meta:
+        db_table = 'BaseZone_Banknifty'
+        
+class BaseZoneNifty(models.Model):
+    in_basezone = models.BooleanField(default=False, null=True, blank=True)
+    base_price = models.FloatField(null=True, blank=True)
+    stop_loss_price = models.FloatField(null=True, blank=True)
+
+    class Meta:
+        db_table = 'BaseZone_Nifty'
+        
+class LiveDataBankNifty(models.Model):
+    live_price = models.FloatField(null=True, blank=True)
+    created_at = models.TimeField(auto_now=True, null=True, blank=True)
+    in_basezone = models.BooleanField(default=False, null=True, blank=True)
+    
+    class Meta:
+        db_table = 'LiveData_Banknifty'
+        
+class LiveDataNifty(models.Model):
+    live_price = models.FloatField(null=True, blank=True)
+    created_at = models.TimeField(auto_now=True, null=True, blank=True)
+    in_basezone = models.BooleanField(default=False, null=True, blank=True)
+    
+    class Meta:
+        db_table = 'LiveData_Nifty'

@@ -128,15 +128,15 @@ def StockCall():
                                 consoleRed.print("SuccessFully SELL STOCK OF CALL")
                                 # PcrUpdatee()
                                 
-                            consoleRed.print(stock_name, 'CALL---> ' ,'buy_pricee:', buy_pricee, 'sell_Pricee:', sell_Pricee, 'liveBidPrice:', liveBidPrice_sell, 'stop_Losss:', stop_Losss)
+                            consoleBlue.print(stock_name, 'CALL---> ' ,'buy_pricee:', buy_pricee, 'sell_Pricee:', sell_Pricee, 'liveBidPrice:', liveBidPrice_sell, 'stop_Losss:', stop_Losss)
                             if sell_Pricee <= liveBidPrice_sell :
                                 final_statuss = "PROFIT"
                                 stock_detail.objects.filter(id=stock_ID).update(status = 'SELL', exit_price = liveBidPrice_sell, sell_buy_time=sell_time, final_status = final_statuss, admin_call= True, exit_pcr= pcr)
-                                consoleRed.print("SuccessFully SELL STOCK OF CALL")
+                                consoleBlue.print("SuccessFully SELL STOCK OF CALL")
                             if stop_Losss > liveBidPrice_sell:
                                 final_statuss = "LOSS"
                                 stock_detail.objects.filter(id=stock_ID).update(status = 'SELL', exit_price = liveBidPrice_sell, sell_buy_time=sell_time, final_status = final_statuss,admin_call = True, exit_pcr= pcr )
-                                consoleRed.print("SuccessFully SELL STOCK OF CALL")
+                                consoleBlue.print("SuccessFully SELL STOCK OF CALL")
         except Exception as e:
             consoleRed.print('Error-->', e)
             consoleRed.print("Connection refused by the server...................................... STOCK CE")
@@ -252,18 +252,18 @@ def StockPut():
                                 else:
                                     final_status_admin_call = 'LOSS'
                                 stock_detail.objects.filter(id=stock_ID).update(status = 'SELL', exit_price = liveBidPrice_sell, sell_buy_time=sell_time, final_status = final_status_admin_call, exit_pcr= pcr )
-                                consoleRed.print("SuccessFully SELL STOCK OF PUT")
+                                consoleBlue.print("SuccessFully SELL STOCK OF PUT")
                                 # PcrUpdatee()
 
-                            consoleRed.print(stock_name, 'PUT---> ' ,'buy_pricee:', buy_pricee, 'sell_Pricee:', sell_Pricee, 'liveBidPrice:', liveBidPrice_sell, 'stop_Losss:', stop_Losss)
+                            consoleBlue.print(stock_name, 'PUT---> ' ,'buy_pricee:', buy_pricee, 'sell_Pricee:', sell_Pricee, 'liveBidPrice:', liveBidPrice_sell, 'stop_Losss:', stop_Losss)
                             if sell_Pricee <= liveBidPrice_sell :
                                 final_statuss = "PROFIT"
                                 stock_detail.objects.filter(id=stock_ID).update(status = 'SELL', exit_price = liveBidPrice_sell, sell_buy_time=sell_time, final_status = final_statuss, admin_call= True, exit_pcr= pcr)
-                                consoleRed.print("SuccessFully SELL STOCK OF PUT")
+                                consoleBlue.print("SuccessFully SELL STOCK OF PUT")
                             if stop_Losss > liveBidPrice_sell:
                                 final_statuss = "LOSS"
                                 stock_detail.objects.filter(id=stock_ID).update(status = 'SELL', exit_price = liveBidPrice_sell, sell_buy_time=sell_time, final_status = final_statuss,admin_call = True, exit_pcr= pcr )
-                                consoleRed.print("SuccessFully SELL STOCK OF PUT")
+                                consoleBlue.print("SuccessFully SELL STOCK OF PUT")
         except Exception as e:
             consoleRed.print('Error-->', e)
             consoleRed.print("Connection refused by the server...................................... STOCK PE")
