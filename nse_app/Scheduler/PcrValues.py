@@ -36,11 +36,40 @@ def PcrValues():
         '15:30',
      ] 
 
+    times_5min =  [
+        '9:15',
+        '9:20','9:25','9:30',
+        '9:35','9:40','9:45',
+        '9:50','9:55','10:00',
+        '10:05','10:10','10:15',
+        '10:20','10:25','10:30',
+        '10:35','10:40','10:45',
+        '10:50','10:55','11:00',
+        '11:05','11:10','11:15',
+        '11:20','11:25','11:30',
+        '11:35','11:40','11:45',
+        '11:50','11:55','12:00',
+        '12:05','12:10','12:15',
+        '12:20','12:25','12:30',
+        '12:35','12:40','12:45',
+        '12:50','12:55','13:00',
+        '13:05','13:10','13:15',
+        '13:20','13:25','13:30',
+        '13:35','13:40','13:45',
+        '13:50','13:55','14:00',
+        '14:05','14:10','14:15',
+        '14:20','14:25','14:30',
+        '14:35','14:40','14:45',
+        '14:50','14:55','15:00',
+        '15:05','15:10','15:15',
+        '15:20','15:25','15:30',
+     ] 
+
 
     headers =  {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, '
                     'like Gecko) '
                     'Chrome/80.0.3987.149 Safari/537.36',
-    'accept-language': 'en,gu;q=0.9,hi;q=0.8', 'accept-encoding': 'gzip, deflate, br'}
+                    'accept-language': 'en,gu;q=0.9,hi;q=0.8', 'accept-encoding': 'gzip, deflate, br'}
     
     
     ### ------------------------ BANK NIFTY ------------------------------------
@@ -51,7 +80,7 @@ def PcrValues():
     
     ## PCR
     pcr = Coustom.pcrValue(api_data)
-    if current_time in times:
+    if current_time in times_5min:
         pcr_values.objects.create(option_name='BANKNIFTY', pcr_value=pcr)
         print('Pcr BankNifty->', pcr)
 
@@ -78,7 +107,7 @@ def PcrValues():
     
     ## PCR
     pcr_nifty = Coustom.pcrValue(api_data_nifty)
-    if current_time in times:
+    if current_time in times_5min:
         pcr_values.objects.create(option_name='NIFTY', pcr_value=pcr_nifty)
         print('Pcr Nifty->', pcr_nifty)
         

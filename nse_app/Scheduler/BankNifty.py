@@ -191,6 +191,8 @@ def BANKNIFTY():
                             
                             if base_price < last_live_price:
                                 BidPrice_CE = nbpd['CE']['bidprice']
+                                squareoff_CE = '%.2f'% (( BidPrice_CE * profitPercentage_CALL ) / 100)
+                                stoploss_CE = '%.2f'% ((BidPrice_CE * lossPercentage_CALL ) / 100)
                                 sellPrice_CE = '%.2f'% ((BidPrice_CE * profitPercentage_CALL) / 100 + BidPrice_CE)
                                 stop_loss_CE = '%.2f'% (BidPrice_CE - (BidPrice_CE * lossPercentage_CALL ) / 100)
                                 strikePrice_CE = nbpd['strikePrice']
@@ -198,6 +200,9 @@ def BANKNIFTY():
                                 postData = { "buy_price": BidPrice_CE, "base_strike_price":strikePrice_CE, "live_Strike_price":livePrice, "sell_price": sellPrice_CE, "stop_loseprice": stop_loss_CE, 'percentage': OptionId_CALL, 'call_put': "CALL"}
                                 stock_detail.objects.create(status="BUY",buy_price = BidPrice_CE, base_strike_price=strikePrice_CE, live_Strike_price=livePrice, live_brid_price=BidPrice_CE, sell_price= sellPrice_CE ,stop_loseprice=stop_loss_CE, percentage_id=OptionId_CALL , call_put = "CALL", buy_pcr = '%.2f'% (pcr) )
                                 print('SuccessFully Buy IN BANKNIFTY CALL: ',postData)                
+                                if live_call == True:
+                                    sellFunOption(strikePrice_CE, BidPrice_CE, squareoff_CE, stoploss_CE, OptionId_CALL, lot_size_CALL)
+        
                                 BaseZoneBanknifty.objects.all().delete()
                                 consoleGreen.print('SuccessFully BUY---------------------------------->', livePrice)
                             else:

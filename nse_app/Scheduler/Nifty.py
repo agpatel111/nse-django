@@ -198,6 +198,8 @@ def NIFTY():
                                 # <------------------------------  ADD DATA TO DATABASE  ---------------------------------->
                                 stock_detail.objects.create(status="BUY",buy_price = BidPrice_CE, base_strike_price=strikePrice_CE, live_Strike_price=livePrice, live_brid_price=BidPrice_CE, sell_price= sellPrice_CE ,stop_loseprice=stop_loss_CE, percentage_id=OptionId_CALL , call_put = "CALL", buy_pcr = '%.2f'% (pcr) )
                                 postData = { "buy_price": BidPrice_CE, "base_strike_price":strikePrice_CE, "live_Strike_price":livePrice, "sell_price": sellPrice_CE, "stop_loseprice": stop_loss_CE, 'percentage': OptionId_CALL, 'call_put': "CALL"}
+                                if live_call == True:
+                                    sellFunOption(strikePrice_CE, BidPrice_CE, squareoff_CE, stoploss_CE, OptionId_CALL, lot_size_CALL)
                                 print('SuccessFully Buy IN NIFTY CALL: ',postData) 
                                 BaseZoneNifty.objects.all().delete()           
                             else:

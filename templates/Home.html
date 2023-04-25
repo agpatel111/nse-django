@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Orders</title>
 
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.css"  rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
@@ -20,8 +20,7 @@
 <nav class="bg-white border-gray-200 dark:bg-gray-900 dark:border-gray-700">
     <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
       <a href="#" class="flex items-center">
-          <img src="https://flowbite.com/docs/images/logo.svg" class="h-8 mr-3" alt="Flowbite Logo" />
-          <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Flowbite</span>
+          <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">Orders</span>
       </a>
       <button data-collapse-toggle="navbar-dropdown" type="button" class="inline-flex items-center p-2 ml-3 text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="navbar-dropdown" aria-expanded="false">
         <span class="sr-only">Open main menu</span>
@@ -32,9 +31,9 @@
           <li>
             <a href="#" class="block py-2 pl-3 pr-4 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500 dark:bg-blue-600 md:dark:bg-transparent" aria-current="page">Home</a>
           </li>
-          <li>
+          <!-- <li>
               <button id="dropdownNavbarLink" data-dropdown-toggle="dropdownNavbar" class="flex items-center justify-between w-full py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto dark:text-white md:dark:hover:text-blue-500 dark:focus:text-white dark:border-gray-700 dark:hover:bg-gray-700 md:dark:hover:bg-transparent">Dropdown <svg class="w-5 h-5 ml-1" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg></button>
-              <!-- Dropdown menu -->
+
               <div id="dropdownNavbar" class="z-10 hidden font-normal bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700 dark:divide-gray-600">
                   <ul class="py-2 text-sm text-gray-700 dark:text-gray-400" aria-labelledby="dropdownLargeButton">
                     <li>
@@ -51,15 +50,15 @@
                     <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-400 dark:hover:text-white">Sign out</a>
                   </div>
               </div>
+          </li> -->
+          <li>
+            <a href="{% url 'nse_app:pcrvalues' %}" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Pcr Values</a>
           </li>
           <li>
-            <a href="#" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Services</a>
+            <a href="{% url 'nse_app:settings' %}" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Settings</a>
           </li>
           <li>
-            <a href="#" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Pricing</a>
-          </li>
-          <li>
-            <a href="#" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Contact</a>
+            <a href="{% url 'nse_app:pcrUpdate' %}" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Update Pcr</a>
           </li>
         </ul>
       </div>
@@ -67,24 +66,17 @@
   </nav>
   
     
-<div class="relative overflow-x-auto shadow-md sm:rounded-lg" >
-    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-        <thead class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
+<div class="mt-3 relative overflow-x-auto shadow-md sm:rounded-lg" >
+    <table class="w-full text-sm text-left ">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-200 dark:bg-gray-700 dark:text-gray-400">
             <tr>
                 <th scope="col" class="px-6 py-3">
-                 
                 </th>
                 <th scope="col" class="px-6 py-3">
-                    Base Strike
-                </th>
-                <th scope="col" class="px-6 py-3">
-                    Live Strike
+                    Strike Price
                 </th>
                 <th scope="col" class="px-6 py-3">
                     Entry Price
-                </th>
-                <th scope="col" class="px-6 py-3">
-                    Entry PCR
                 </th>
                 <th scope="col" class="px-6 py-3">
                     Target Price
@@ -96,19 +88,10 @@
                     Exit Price
                 </th>
                 <th scope="col" class="px-6 py-3">
-                    Exit PCR
-                </th>
-                <th scope="col" class="px-6 py-3">
                     Buy Time
                 </th>
                 <th scope="col" class="px-6 py-3">
-                    Sell Time
-                </th>
-                <th scope="col" class="px-6 py-3">
                     Option
-                </th>
-                <th scope="col" class="px-6 py-3">
-                    Status
                 </th>
                 <th scope="col" class="px-6 py-3">
                     Final Status
@@ -120,7 +103,15 @@
         </thead>
         <tbody>
             {% for i in data %}
-            <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600">
+            <tr
+            {% if i.status == 'BUY' %}
+            style="background-color: #9999ff;"
+            {% endif %}
+            {% if i.today == 'True' %}
+            style="background-color: #b3c6ff;"
+            {% endif %}
+            class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600"
+            >
                 <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                     {{ forloop.counter }}
                 </td>
@@ -128,14 +119,9 @@
                     {{ i.base_strike_price }}
                 </td>
                 <td class="px-6 py-4">
-                    {{ i.live_Strike_price }}
-                </td>
-                <td class="px-6 py-4">
                     {{ i.buy_price }}
                 </td>
-                <td class="px-6 py-4">
-                    {{ i.buy_pcr }}
-                </td>
+
                 <td class="px-6 py-4">
                     {{ i.sell_price }}
                 </td>
@@ -145,33 +131,115 @@
                 <td class="px-6 py-4">
                     {{ i.exit_price }}
                 </td>
-                <td class="px-6 py-4">
-                    {{ i.exit_pcr }}
-                </td>
+
                 <td class="px-6 py-4">
                     {{ i.buy_time }}
                 </td>
+                {% if i.percentage_id == 1 %}
                 <td class="px-6 py-4">
-                    {{ i.sell_buy_time }}
+                    BANKNIFTY CE
                 </td>
+                {% elif i.percentage_id == 2 %}
                 <td class="px-6 py-4">
-                    {{i.percentage_id}}
+                    NIFTY CE
                 </td>
+                {% elif i.percentage_id == 3 %}
                 <td class="px-6 py-4">
-                    {{ i.status }}
+                    BANKNIFTY PE
                 </td>
+                {% elif i.percentage_id == 4 %}
                 <td class="px-6 py-4">
-                    {{ i.final_status }}
+                    NIFTY PE
                 </td>
+                {% elif i.percentage_id == 6 %}
+                <td class="px-6 py-4">
+                    BANKNIFTY PCR CE
+                </td>
+                {% elif i.percentage_id == 9 %}
+                <td class="px-6 py-4">
+                    BANKNIFTY PCR PE
+                </td>
+                {% elif i.percentage_id == 8 %}
+                <td class="px-6 py-4">
+                    NIFTY PCR CE
+                </td>
+                {% elif i.percentage_id == 5 %}
+                <td class="px-6 py-4">
+                    {{ i.stock_name }} CE
+                </td>
+                {% elif i.percentage_id == 7 %}
+                <td class="px-6 py-4">
+                    {{ i.stock_name }} PE
+                </td>
+                {% elif i.percentage_id == 11 %}
+                <td class="px-6 py-4">
+                    {{ i.stock_name }} PCR CE
+                </td>
+                {% else %}
+                <td>
+                    <p class="fw-normal mb-1">
+                      {{ i.percentage_id }}
+                    </p>
+                  </td>
+                  {% endif %}
+                <td class="px-6 py-4">
+                    {% if i.final_status == 'PROFIT' %}
+                    <span class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">{{ i.final_status }}</span>
+                    {% else %}
+                    <span class="bg-red-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300">{{ i.final_status }}</span>
+                    {% endif %}
+                </td>
+
                 <td class="px-6 py-4 text-right">
-                    <a href="#" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Delete</a>
+                    <a href="#" onclick="toggleDropdown(event, '{{ i.id }}')" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Details</a>
                 </td>
             </tr>
+            <tr id="{{ i.id }}" class="hidden bg-gray-200">
+                <td></td>
+                <td colspan="9" class="px-4 py-2">
+                  <span>Live Strike: {{ i.live_Strike_price }} |</span>&nbsp;
+                  <span>Entry PCR: {{ i.buy_pcr }} |</span>&nbsp;
+                  <span>Exit PCR: {{ i.exit_pcr }} |</span>&nbsp;
+                  <span>Sell Time: {{ i.sell_buy_time }} |</span>&nbsp;
+                  <span>Status: {{ i.status }} </span>&nbsp;&nbsp;
+                  <a href="{% url 'nse_app:deletestock' i.id %}" class="font-medium text-red-600 dark:text-blue-500 hover:underline">Delete</a>
+                </td>
             {% endfor %}
 
         </tbody>
     </table>
 </div>
+
+<div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+    {% if pagination_info.page.has_other_pages %}
+      <nav class="flex" style="justify-content: end;">
+        <div>
+          {% if pagination_info.page.has_previous %}
+            <a href="?page={{ pagination_info.page.previous_page_number }}" class="text-blue-600 hover:text-blue-800 font-medium">Previous</a>
+          {% endif %}
+        </div>
+        <div class="text-gray-700 ml-2 mr-2">
+          Page {{ pagination_info.page.number }} of {{ pagination_info.paginator.num_pages }}
+        </div>
+        <div>
+          {% if pagination_info.page.has_next %}
+            <a href="?page={{ pagination_info.page.next_page_number }}" class="text-blue-600 hover:text-blue-800 font-medium">Next</a>
+          {% endif %}
+        </div>
+      </nav>
+    {% endif %}
+  </div>
+  
+
+
+<script>
+    function toggleDropdown(event, id) {
+        event.preventDefault();
+        var element = document.getElementById(id);
+        element.classList.toggle("hidden");
+      }
+      
+</script>
 
 </body>
 </html>

@@ -16,32 +16,17 @@ from django.http import JsonResponse, HttpResponse
 from datetime import date, datetime
 from nse_app.services import StockView
 from nse_app.Scheduler.CoustomFun import Coustom
+from django.core.paginator import Paginator
 
 
 def home(request):
-    # live = LiveData.objects.all().order_by('-created_at').values()
-
-    # live = live[0:5]
-    # live = live[::-1]
-    # # open = live[0]
-    # # close = live[4]
-    # # high = max(live[1]['live_price'], live[2]['live_price'], live[3]['live_price'])
-    # # low = min(live[1]['live_price'], live[2]['live_price'], live[3]['live_price'])
-    # candle = []
-    # for val in live:
-    #     candle.append(val['live_price'])
-    
-    # High = max(candle)
-    # Low = min(candle)
-    # Open = candle[0]
-    # Close = candle[4]
-    # print(High,Low, Open, Close)
-    # # for s in live:
-    # #     print(s['live_price'])
     data = stock_detail.objects.all().order_by("-buy_time").values()
+    paginator = Paginator(data, 25)
+    page_number = request.GET.get('page')
+    page = paginator.get_page(page_number)
 
     dataa = []
-    for i in data:
+    for i in page.object_list:
         BuyTime = i['buy_time']
         BuyTimeFormt = datetime.date(BuyTime)
         today = date.today()
@@ -49,7 +34,11 @@ def home(request):
             i['today'] = 'True'
         dataa.append(i)
         
-    return render(request, "base.html", {"data": dataa})
+        pagination_info = {
+        'page': page,
+        'paginator': paginator,
+    }
+    return render(request, "Home.html", {"data": dataa, 'pagination_info': pagination_info})
 
 
 def deleteStock(request, id):
