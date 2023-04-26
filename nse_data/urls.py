@@ -27,8 +27,8 @@ scheduler = BackgroundScheduler()
 
 # # scheduler.add_job(StockPut, "interval", minutes=0.5, start_date=start_date, end_date=end_date) 
 # # scheduler.add_job(StockCall, "interval", minutes=0.5, start_date=start_date, end_date=end_date) 
-scheduler.add_job(PcrValues, "interval", minutes=1, start_date=start_date, end_date=end_date)
-scheduler.add_job(NIFTY, "interval", minutes=0.27, start_date=start_date, end_date=end_date) 
-scheduler.add_job(BANKNIFTY, "interval", minutes=0.27, start_date=start_date, end_date=end_date)
+scheduler.add_job(PcrValues, "interval", minutes=1, id='PcrValues_001')
+scheduler.add_job(NIFTY, "interval", minutes=0.27, id='nifty_001',) 
+scheduler.add_job(BANKNIFTY, "interval", minutes=0.27, id='banknifty_001')
 
 scheduler.start()

@@ -153,6 +153,7 @@ class LiveDataBankNifty(models.Model):
     live_price = models.FloatField(null=True, blank=True)
     created_at = models.TimeField(auto_now=True, null=True, blank=True)
     in_basezone = models.BooleanField(default=False, null=True, blank=True)
+    # in_resistance = models.BooleanField(default=False, null=True, blank=True)
     
     class Meta:
         db_table = 'LiveData_Banknifty'
@@ -161,6 +162,7 @@ class LiveDataNifty(models.Model):
     live_price = models.FloatField(null=True, blank=True)
     created_at = models.TimeField(auto_now=True, null=True, blank=True)
     in_basezone = models.BooleanField(default=False, null=True, blank=True)
+    # in_resistance = models.BooleanField(default=False, null=True, blank=True)
     
     class Meta:
         db_table = 'LiveData_Nifty'

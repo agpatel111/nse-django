@@ -48,12 +48,18 @@ def deleteStock(request, id):
 
 
 def PcrValue(request):
-    data = pcr_values.objects.all().order_by("-timestamp")
-    return render(request, 'PcrValues.html', {'data': data})
+    data = pcr_values.objects.all().order_by("-timestamp").values()
+    today = date.today()
+    arr1 = []
+    for i in data:
+        BuyTimeFormt = datetime.date(i['timestamp'])
+        if BuyTimeFormt == today:
+            arr1.append(i)
+    return render(request, 'tailwind/PcrValues.html', {'data': arr1})
 
 def settings(request):
     data = live.objects.all()
-    return render(request, 'settings.html', { 'data' : data })
+    return render(request, 'tailwind/settings.html', { 'data' : data })
 
 @csrf_exempt
 def changesettings(request):
@@ -66,16 +72,16 @@ def changesettings(request):
             obj = True
         if name == 'BankNifty':
             live.objects.filter(id = 1).update(live_banknifty = obj)
-            return JsonResponse({'status' : 1})
+            return JsonResponse({'status' : 1, 'data': obj})
         if name == 'Nifty':
             live.objects.filter(id = 1).update(live_nifty = obj)
-            return JsonResponse({'status' : 1})
+            return JsonResponse({'status' : 1, 'data': obj})
         if name == 'StockCe':
             live.objects.filter(id = 1).update(live_stock_ce = obj)
-            return JsonResponse({'status' : 1})
+            return JsonResponse({'status' : 1, 'data': obj})
         if name == 'StockPe':
             live.objects.filter(id = 1).update(live_stock_pe = obj)
-            return JsonResponse({'status' : 1})
+            return JsonResponse({'status' : 1, 'data': obj})
 
 @api_view(['POST'])
 def stockData(request):
@@ -229,7 +235,7 @@ def pcrUpdate(request):
     #     pass   
     #     # stock_for_buy.objects.create(stocks_name=sorted_put[0]['StockName'], call_or_put='PUT')
 
-    return render(request, "PcrStock.html", { 'update_needed' : update_needed, 'success_count' : success_count, 'reject_count': reject_count })
+    return render(request, "tailwind/PcrStock.html", { 'update_needed' : update_needed, 'success_count' : success_count, 'reject_count': reject_count })
 
 class stock_details(APIView):
     # permission_classes = [IsAuthenticated]              

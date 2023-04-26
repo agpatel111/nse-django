@@ -102,7 +102,7 @@ class Coustom():
                     loss = loss + 1
         if profit > loss:
             setOneStock = False
-            consoleGreen.print(f"YOU MAKE PROFIT TODAY IN {option} {call_put}")
+            # consoleGreen.print(f"YOU MAKE PROFIT TODAY IN {option} {call_put}")
         else:
             setOneStock = True
             
