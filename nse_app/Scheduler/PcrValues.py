@@ -87,10 +87,17 @@ def PcrValues():
     ## LIVE PRICE
     livePrice_banknifty = api_data['records']['underlyingValue']
     base_zone_obj = BaseZoneBanknifty.objects.all().values() 
+    resistance_zone_obj = ResistanceZone_Banknifty.objects.all().values() 
     if len(base_zone_obj) != 0:
         if base_zone_obj[0]['in_basezone'] == True:
             if current_time in times:
                 LiveDataBankNifty.objects.create(live_price = livePrice_banknifty, in_basezone=True)
+                print("LiveData Added successfully BankNifty", livePrice_banknifty)
+                
+    elif len(resistance_zone_obj) != 0:
+        if resistance_zone_obj[0]['in_resistance'] == True:
+            if current_time in times:
+                LiveDataBankNifty.objects.create(live_price = livePrice_banknifty, in_resistance=True)
                 print("LiveData Added successfully BankNifty", livePrice_banknifty)
     else:
         if current_time in times:
@@ -114,10 +121,17 @@ def PcrValues():
     ## LIVE PRICE
     livePrice_nifty = api_data_nifty['records']['underlyingValue']
     base_zone_obj_nifty = BaseZoneNifty.objects.all().values() 
+    resistance_zone_obj_nifty = ResistanceZone_Nifty.objects.all().values() 
     if len(base_zone_obj_nifty) != 0:
         if base_zone_obj_nifty[0]['in_basezone'] == True:
             if current_time in times:
                 LiveDataNifty.objects.create(live_price = livePrice_nifty, in_basezone=True)
+                print("LiveData Added successfully Nifty", livePrice_nifty)
+
+    elif len(resistance_zone_obj_nifty) != 0:
+        if resistance_zone_obj_nifty[0]['in_resistance'] == True:
+            if current_time in times:
+                LiveDataNifty.objects.create(live_price = livePrice_nifty, in_resistance=True)
                 print("LiveData Added successfully Nifty", livePrice_nifty)
         
     else:

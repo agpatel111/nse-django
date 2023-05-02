@@ -69,14 +69,6 @@ class stock_detail(models.Model):
 
     class Meta:
         db_table = 'stocks_details'
-    
-    # @classmethod
-    # def create(cls, percentage):
-    #     percentage = cls(percentage=percentage)
-    #     print('hello', percentage)
-    #     # do something with the book
-    #     return book
-
 
 class pcr_stock_name(models.Model):
     name = models.CharField(max_length = 100)
@@ -149,11 +141,27 @@ class BaseZoneNifty(models.Model):
     class Meta:
         db_table = 'BaseZone_Nifty'
         
+class ResistanceZone_Banknifty(models.Model):
+    in_resistance = models.BooleanField(default=False, null=True, blank=True)
+    resistance_price = models.FloatField(null=True, blank=True)
+    stop_loss_price = models.FloatField(null=True, blank=True)
+
+    class Meta:
+        db_table = 'ResistanceZone_Banknifty'
+        
+class ResistanceZone_Nifty(models.Model):
+    in_resistance = models.BooleanField(default=False, null=True, blank=True)
+    resistance_price = models.FloatField(null=True, blank=True)
+    stop_loss_price = models.FloatField(null=True, blank=True)
+
+    class Meta:
+        db_table = 'ResistanceZone_Nifty'
+        
 class LiveDataBankNifty(models.Model):
     live_price = models.FloatField(null=True, blank=True)
     created_at = models.TimeField(auto_now=True, null=True, blank=True)
     in_basezone = models.BooleanField(default=False, null=True, blank=True)
-    # in_resistance = models.BooleanField(default=False, null=True, blank=True)
+    in_resistance = models.BooleanField(default=False, null=True, blank=True)
     
     class Meta:
         db_table = 'LiveData_Banknifty'
@@ -162,7 +170,7 @@ class LiveDataNifty(models.Model):
     live_price = models.FloatField(null=True, blank=True)
     created_at = models.TimeField(auto_now=True, null=True, blank=True)
     in_basezone = models.BooleanField(default=False, null=True, blank=True)
-    # in_resistance = models.BooleanField(default=False, null=True, blank=True)
+    in_resistance = models.BooleanField(default=False, null=True, blank=True)
     
     class Meta:
         db_table = 'LiveData_Nifty'
