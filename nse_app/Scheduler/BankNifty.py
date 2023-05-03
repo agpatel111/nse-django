@@ -68,14 +68,19 @@ def BankniftyApiFun():
 
 
     base_Price_up = []
+    Total_oi_up_arr = []
     for upSlice3 in up_price[0:3]:
         PE_oi_up = upSlice3['PE']['changeinOpenInterest'] + upSlice3['PE']['openInterest']
         CE_oi_up = upSlice3['CE']['changeinOpenInterest'] + upSlice3['CE']['openInterest']
         Total_oi_up = PE_oi_up - CE_oi_up
+        Total_oi_up_arr.append(Total_oi_up)
         if abs(Total_oi_up) > 50000:
+            if abs(Total_oi_up_arr[0]) == abs(Total_oi_up):
+                if down_first_total_oi < 50000:
+                    base_Price_up.append(upSlice3)  
+                    break 
             base_Price_up.append(upSlice3)  
             break 
-
 
 def SettingFun():
     
@@ -165,10 +170,10 @@ def SettingFun():
 
 
 def BANKNIFTY():
-    current_time = datetime.datetime.now().time()
-    start_time = datetime.time(hour=9, minute=15)
-    end_time = datetime.time(hour=15, minute=30)
-    if start_time <= current_time <= end_time:
+    # current_time = datetime.datetime.now().time()
+    # start_time = datetime.time(hour=9, minute=15)
+    # end_time = datetime.time(hour=15, minute=30)
+    # if start_time <= current_time <= end_time:
         global api_data, livePrice, timestamp, filteredData, PEMax, CEMax, down_price, up_price, downSliceList, upSliceList, pcr, base_Price_down, base_Price_up
         global up_first_total_oi, down_first_total_oi, CEMaxValue, PEMaxValue
         
@@ -268,8 +273,8 @@ def BANKNIFTY():
                                     ## ADD DATA TO DATABASE 
                                     stock_detail.objects.create(status="BUY",buy_price = BidPrice_PUT,live_brid_price=BidPrice_PUT , base_strike_price=strikePrice_PUT, live_Strike_price=livePrice, sell_price= sellPrice_PUT ,stop_loseprice=stop_loss_PUT, percentage_id=OptionId_PUT , call_put = "PUT", buy_pcr = '%.2f'% (pcr) )
                                     ## LIVE BUY
-                                    # if live_call == True:
-                                    #     sellFunOption(strikePrice_PUT, BidPrice_PUT, squareoff_PUT, stoploss_PUT, OptionId_PUT, lot_size_PUT)
+                                    if live_call == True:
+                                        sellFunOption(strikePrice_PUT, BidPrice_PUT, squareoff_PUT, stoploss_PUT, OptionId_PUT, lot_size_PUT)
                                     print('SuccessFully Buy IN BANKNIFTY PUT: ',postData)
 
                                     LiveDataBankNifty.objects.filter(id = liveDbPrice['id']).update(in_resistance = False)
