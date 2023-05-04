@@ -63,6 +63,8 @@ def BankniftyApiFun():
                 if up_first_total_oi < 50000:
                     base_Price_down.append(downSlice3)
                     break
+                else:
+                    continue
             base_Price_down.append(downSlice3)
             break
 
@@ -79,6 +81,8 @@ def BankniftyApiFun():
                 if down_first_total_oi < 50000:
                     base_Price_up.append(upSlice3)  
                     break 
+                else:
+                    continue
             base_Price_up.append(upSlice3)  
             break 
 
@@ -170,10 +174,10 @@ def SettingFun():
 
 
 def BANKNIFTY():
-    # current_time = datetime.datetime.now().time()
-    # start_time = datetime.time(hour=9, minute=15)
-    # end_time = datetime.time(hour=15, minute=30)
-    # if start_time <= current_time <= end_time:
+    current_time = datetime.datetime.now().time()
+    start_time = datetime.time(hour=9, minute=15)
+    end_time = datetime.time(hour=15, minute=30)
+    if start_time <= current_time <= end_time:
         global api_data, livePrice, timestamp, filteredData, PEMax, CEMax, down_price, up_price, downSliceList, upSliceList, pcr, base_Price_down, base_Price_up
         global up_first_total_oi, down_first_total_oi, CEMaxValue, PEMaxValue
         
@@ -232,6 +236,10 @@ def BANKNIFTY():
                                 else:
                                     BaseZoneBanknifty.objects.all().delete()
                                     LiveDataBankNifty.objects.filter(id = liveDbPrice['id']).update(in_basezone = False)
+                            
+                            if not new_strike_price_minus_CE_ < livePrice < new_strike_price_plus_CE_:
+                                    BaseZoneBanknifty.objects.all().delete()
+
                                 
                             
             ### PUT
@@ -282,6 +290,9 @@ def BANKNIFTY():
                                 else:
                                     ResistanceZone_Banknifty.objects.all().delete()
                                     LiveDataBankNifty.objects.filter(id = liveDbPrice['id']).update(in_resistance = False)
+                            
+                            if not new_strike_price_minus_PE < livePrice < new_strike_price_plus_PE:
+                                    ResistanceZone_Banknifty.objects.all().delete()
            
                             
 

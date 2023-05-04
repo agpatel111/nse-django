@@ -59,9 +59,11 @@ def NiftyApiFun():
         Total_oi_down_arr.append(Total_oi_down)
         if Total_oi_down > 50000:
             if abs(Total_oi_down_arr[0]) == abs(Total_oi_down):
-                if up_first_total_oi < 50000:
+                if abs(up_first_total_oi) < 50000:
                     base_Price_down.append(downSlice3)
                     break
+                else:
+                    continue
             base_Price_down.append(downSlice3)
             break
 
@@ -74,9 +76,11 @@ def NiftyApiFun():
         Total_oi_up_arr.append(Total_oi_up)
         if abs(Total_oi_up) > 50000:
             if abs(Total_oi_up_arr[0]) == abs(Total_oi_up):
-                if down_first_total_oi < 50000:
+                if abs(down_first_total_oi) < 50000:
                     base_Price_up.append(upSlice3)  
                     break 
+                else:
+                    continue
             base_Price_up.append(upSlice3)  
             break 
 
@@ -166,10 +170,10 @@ def SettingFun():
 
 
 def NIFTY():
-    # current_time = datetime.datetime.now().time()
-    # start_time = datetime.time(hour=9, minute=15)
-    # end_time = datetime.time(hour=15, minute=30)
-    # if start_time <= current_time <= end_time:    
+    current_time = datetime.datetime.now().time()
+    start_time = datetime.time(hour=9, minute=15)
+    end_time = datetime.time(hour=15, minute=30)
+    if start_time <= current_time <= end_time:    
         global api_data, livePrice, timestamp, filteredData, PEMax, CEMax, down_price, up_price, downSliceList, upSliceList, pcr, base_Price_down, base_Price_up
         global up_first_total_oi, down_first_total_oi, CEMaxValue, PEMaxValue
 
@@ -200,7 +204,7 @@ def NIFTY():
                                     BaseZoneNifty.objects.create(in_basezone = True, base_price = new_strike_price_plus_CE_ , stop_loss_price=new_strike_price_minus_CE_)
                         else:
                             file.write('------------------------------------------------> NIFTY IN BUYZONE' + "\n")
-                            consoleBlue.print('------------ NIFTY IN BUYZONE-------------------')
+                            consoleBlue.print('------------------------------------------------> NIFTY IN BUYZONE')
                             base_zone_obj = base_zone_obj[0]
                             base_price = base_zone_obj['base_price']
                             if liveDbPrice['in_basezone'] == True:
@@ -229,7 +233,9 @@ def NIFTY():
                                 else:
                                     BaseZoneNifty.objects.all().delete()
                                     LiveDataNifty.objects.filter(id = liveDbPrice['id']).update(in_basezone = False)
-
+                            
+                            if not new_strike_price_minus_CE_ < livePrice < new_strike_price_plus_CE_:
+                                BaseZoneNifty.objects.all().delete()
 
             ### PUT
             if len(base_Price_up) != 0:
@@ -279,6 +285,9 @@ def NIFTY():
                                 else:
                                     ResistanceZone_Nifty.objects.all().delete()
                                     LiveDataNifty.objects.filter(id = liveDbPrice['id']).update(in_resistance = False)                                    
+                            
+                            if not new_strike_price_minus_PE < livePrice < new_strike_price_plus_PE:
+                                ResistanceZone_Nifty.objects.all().delete()
 
             # ## CALL BUY
             # if len(base_Price_down) != 0:
