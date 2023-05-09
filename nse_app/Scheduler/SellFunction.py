@@ -99,7 +99,7 @@ def sellFunOption(strikePrice, BidPrice, squareoff, stoploss, OptionId, lots):
             return df[(df['exch_seg'] == 'NFO') & (df['expiry'] == expiry_day) & (df['instrumenttype'] == instrumenttype) & (df['name'] == symbol) & (df['strike'] == strike_price) & (df['symbol'].str.endswith(pe_ce))].sort_values(by=['expiry'])
 
     # Expiry Date
-    a = date(2023, 5, 4)
+    a = date(2023, 5, 11)
 
     ## banknifty put
     if percentions_sm == 3:
