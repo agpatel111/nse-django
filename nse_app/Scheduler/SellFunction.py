@@ -99,14 +99,14 @@ def sellFunOption(strikePrice, BidPrice, squareoff, stoploss, OptionId, lots):
             return df[(df['exch_seg'] == 'NFO') & (df['expiry'] == expiry_day) & (df['instrumenttype'] == instrumenttype) & (df['name'] == symbol) & (df['strike'] == strike_price) & (df['symbol'].str.endswith(pe_ce))].sort_values(by=['expiry'])
 
     # Expiry Date
-    a = date(2023, 5, 11)
+    a = date(2023, 5, 25)
 
     ## banknifty put
     if percentions_sm == 3:
         symbol = 'BANKNIFTY'
         pe_strike_symbol = getTokenInfo(
             symbol, 'NFO', 'OPTIDX', base_strike_price_sm, 'PE', a).iloc[0]
-        place_order_pcr(pe_strike_symbol['token'], pe_strike_symbol['symbol'],
+        place_order(pe_strike_symbol['token'], pe_strike_symbol['symbol'],
                     pe_strike_symbol['lotsize'], 'BUY', 'MARKET', 0, 'NORMAL', 'NFO')
 
     ## banknifty call
@@ -115,7 +115,7 @@ def sellFunOption(strikePrice, BidPrice, squareoff, stoploss, OptionId, lots):
 
         ce_strike_symbol = getTokenInfo(
             symbol, 'NFO', 'OPTIDX', base_strike_price_sm, 'CE', a).iloc[0]
-        place_order_pcr(ce_strike_symbol['token'], ce_strike_symbol['symbol'],
+        place_order(ce_strike_symbol['token'], ce_strike_symbol['symbol'],
                     ce_strike_symbol['lotsize'], 'SELL', 'MARKET', 0, 'NORMAL', 'NFO')
 
     ## nifty put
@@ -124,7 +124,7 @@ def sellFunOption(strikePrice, BidPrice, squareoff, stoploss, OptionId, lots):
         qty = 25
         pe_strike_symbol = getTokenInfo(
             symbol, 'NFO', 'OPTIDX', base_strike_price_sm, 'PE', a).iloc[0]
-        place_order_pcr(pe_strike_symbol['token'], pe_strike_symbol['symbol'],
+        place_order(pe_strike_symbol['token'], pe_strike_symbol['symbol'],
                     pe_strike_symbol['lotsize'], 'SELL', 'MARKET', 0, 'NORMAL', 'NFO', qty)
 
     ## nifty call
@@ -132,7 +132,7 @@ def sellFunOption(strikePrice, BidPrice, squareoff, stoploss, OptionId, lots):
         symbol = 'NIFTY'
         ce_strike_symbol = getTokenInfo(
             symbol, 'NFO', 'OPTIDX', base_strike_price_sm, 'CE', a).iloc[0]
-        place_order_pcr(ce_strike_symbol['token'], ce_strike_symbol['symbol'],
+        place_order(ce_strike_symbol['token'], ce_strike_symbol['symbol'],
                     ce_strike_symbol['lotsize'], 'SELL', 'MARKET', 0, 'NORMAL', 'NFO')
 
     ## banknifty call pcr

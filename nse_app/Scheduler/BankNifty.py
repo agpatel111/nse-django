@@ -175,7 +175,7 @@ def SettingFun():
 
 def BANKNIFTY():
     current_time = datetime.datetime.now().time()
-    start_time = datetime.time(hour=9, minute=15)
+    start_time = datetime.time(hour=9, minute=40)
     end_time = datetime.time(hour=15, minute=30)
     if start_time <= current_time <= end_time:
         global api_data, livePrice, timestamp, filteredData, PEMax, CEMax, down_price, up_price, downSliceList, upSliceList, pcr, base_Price_down, base_Price_up
@@ -188,59 +188,58 @@ def BANKNIFTY():
             SettingFun()
             
             ### CALL
-            if len(base_Price_down) != 0:
-                for nbpd in base_Price_down:
-                    if setBuyCondition_CALL == True:
-                        base_zone_obj = BaseZoneBanknifty.objects.all().values() 
-                        
-                        liveDbPrice = LiveDataBankNifty.objects.all().order_by('-id').values()
-                        liveDbPrice = liveDbPrice[0]
-                        new_strike_price_CE_ = nbpd['strikePrice']
-                        new_strike_price_plus_CE_ = new_strike_price_CE_ + basePlus_CALL
-                        new_strike_price_minus_CE_ = new_strike_price_CE_ - 15
-                        
-                        if len(base_zone_obj) == 0:
-                            if liveDbPrice['in_basezone'] == False:
-                                file.write(str(timestamp) + '--> ' + str(new_strike_price_minus_CE_) + ' < ' + str(livePrice) + ' < ' + str(new_strike_price_plus_CE_) + ' Call' + "\n")
-                                print('-------------------------------------------------------------------> BANKNIFTY Call:', new_strike_price_minus_CE_, '<', livePrice, '<', new_strike_price_plus_CE_)
-                                if new_strike_price_minus_CE_ < livePrice < new_strike_price_plus_CE_:
-                                    BaseZoneBanknifty.objects.create(in_basezone = True, base_price = new_strike_price_plus_CE_ , stop_loss_price=new_strike_price_minus_CE_)
-                        else:
-                            base_zone_obj = base_zone_obj[0]
-                            base_price = base_zone_obj['base_price']
-
-                            file.write('------------------------------------------------> BANKNIFTY IN BUYZONE' + str(base_price) + str(livePrice) + "\n")
-                            consoleBlue.print('------------------------------------------------> BANKNIFTY IN BUYZONE', base_price, livePrice)
+            if pcr > 0.6:
+                if len(base_Price_down) != 0:
+                    for nbpd in base_Price_down:
+                        if setBuyCondition_CALL == True:
+                            base_zone_obj = BaseZoneBanknifty.objects.all().values() 
                             
-                            if liveDbPrice['in_basezone'] == True:
-                                last_live_price = liveDbPrice['live_price']
-                                consoleBlue.print('------------------------------------------------> BANKNIFTY IN BUYZONE', base_price, last_live_price)
-                                if base_price < last_live_price:
-                                    BidPrice_CE = nbpd['CE']['bidprice']
-                                    squareoff_CE = '%.2f'% (( BidPrice_CE * profitPercentage_CALL ) / 100)
-                                    stoploss_CE = '%.2f'% ((BidPrice_CE * lossPercentage_CALL ) / 100)
-                                    sellPrice_CE = '%.2f'% ((BidPrice_CE * profitPercentage_CALL) / 100 + BidPrice_CE)
-                                    stop_loss_CE = '%.2f'% (BidPrice_CE - (BidPrice_CE * lossPercentage_CALL ) / 100)
-                                    strikePrice_CE = nbpd['strikePrice']
-                                    ## ADD DATA TO DATABASE 
-                                    stock_detail.objects.create(status="BUY",buy_price = BidPrice_CE, base_strike_price=strikePrice_CE, live_Strike_price=livePrice, live_brid_price=BidPrice_CE, sell_price= sellPrice_CE ,stop_loseprice=stop_loss_CE, percentage_id=OptionId_CALL , call_put = "CALL", buy_pcr = '%.2f'% (pcr) )
-
-                                    postData = { "buy_price": BidPrice_CE, "base_strike_price":strikePrice_CE, "live_Strike_price":livePrice, "sell_price": sellPrice_CE, "stop_loseprice": stop_loss_CE, 'percentage': OptionId_CALL, 'call_put': "CALL"}
-                                    postData = json.dumps(postData)
-                                    file.write('------------------------------------------------> SuccessFully Buy IN BANKNIFTY CALL' + postData + "\n")
-                                    consoleGreen.print('SuccessFully Buy IN BANKNIFTY CALL: ',postData)                
-                                    ## SMART API BUY FUNCTION
-                                    if live_call == True:
-                                        sellFunOption(strikePrice_CE, BidPrice_CE, squareoff_CE, stoploss_CE, OptionId_CALL, lot_size_CALL)
-                                    
-                                    LiveDataBankNifty.objects.filter(id = liveDbPrice['id']).update(in_basezone = False)
-                                    BaseZoneBanknifty.objects.all().delete()
-                                else:
-                                    BaseZoneBanknifty.objects.all().delete()
-                                    LiveDataBankNifty.objects.filter(id = liveDbPrice['id']).update(in_basezone = False)
+                            liveDbPrice = LiveDataBankNifty.objects.all().order_by('-id').values()
+                            liveDbPrice = liveDbPrice[0]
+                            new_strike_price_CE_ = nbpd['strikePrice']
+                            new_strike_price_plus_CE_ = new_strike_price_CE_ + basePlus_CALL
+                            new_strike_price_minus_CE_ = new_strike_price_CE_ - 15
                             
-                            # if not new_strike_price_minus_CE_ < livePrice < new_strike_price_plus_CE_:
-                            #         BaseZoneBanknifty.objects.all().delete()
+                            if len(base_zone_obj) == 0:
+                                if liveDbPrice['in_basezone'] == False:
+                                    file.write(str(timestamp) + '--> ' + str(new_strike_price_minus_CE_) + ' < ' + str(livePrice) + ' < ' + str(new_strike_price_plus_CE_) + ' Call' + "\n")
+                                    print('-------------------------------------------------------------------> BANKNIFTY Call:', new_strike_price_minus_CE_, '<', livePrice, '<', new_strike_price_plus_CE_)
+                                    if new_strike_price_minus_CE_ < livePrice < new_strike_price_plus_CE_:
+                                        BaseZoneBanknifty.objects.create(in_basezone = True, base_price = new_strike_price_plus_CE_ , stop_loss_price=new_strike_price_minus_CE_)
+                            else:
+                                base_zone_obj = base_zone_obj[0]
+                                base_price = base_zone_obj['base_price']
+
+                                file.write('------------------------------------------------> BANKNIFTY IN BUYZONE' + str(base_price) + str(livePrice) + "\n")
+                                consoleBlue.print('------------------------------------------------> BANKNIFTY IN BUYZONE', base_price, livePrice)
+                                
+                                if liveDbPrice['in_basezone'] == True:
+                                    last_live_price = liveDbPrice['live_price']
+                                    consoleBlue.print('------------------------------------------------> BANKNIFTY IN BUYZONE', base_price, last_live_price)
+                                    if base_price < last_live_price:
+                                        BidPrice_CE = nbpd['CE']['bidprice']
+                                        squareoff_CE = '%.2f'% (( BidPrice_CE * profitPercentage_CALL ) / 100)
+                                        stoploss_CE = '%.2f'% ((BidPrice_CE * lossPercentage_CALL ) / 100)
+                                        sellPrice_CE = '%.2f'% ((BidPrice_CE * profitPercentage_CALL) / 100 + BidPrice_CE)
+                                        stop_loss_CE = '%.2f'% (BidPrice_CE - (BidPrice_CE * lossPercentage_CALL ) / 100)
+                                        strikePrice_CE = nbpd['strikePrice']
+                                        ## ADD DATA TO DATABASE 
+                                        stock_detail.objects.create(status="BUY",buy_price = BidPrice_CE, base_strike_price=strikePrice_CE, live_Strike_price=livePrice, live_brid_price=BidPrice_CE, sell_price= sellPrice_CE ,stop_loseprice=stop_loss_CE, percentage_id=OptionId_CALL , call_put = "CALL", buy_pcr = '%.2f'% (pcr) )
+
+                                        postData = { "buy_price": BidPrice_CE, "base_strike_price":strikePrice_CE, "live_Strike_price":livePrice, "sell_price": sellPrice_CE, "stop_loseprice": stop_loss_CE, 'percentage': OptionId_CALL, 'call_put': "CALL"}
+                                        postData = json.dumps(postData)
+                                        file.write('------------------------------------------------> SuccessFully Buy IN BANKNIFTY CALL' + postData + "\n")
+                                        consoleGreen.print('SuccessFully Buy IN BANKNIFTY CALL: ',postData)                
+                                        ## SMART API BUY FUNCTION
+                                        if live_call == True:
+                                            sellFunOption(strikePrice_CE, BidPrice_CE, squareoff_CE, stoploss_CE, OptionId_CALL, lot_size_CALL)
+                                        
+                                        LiveDataBankNifty.objects.filter(id = liveDbPrice['id']).update(in_basezone = False)
+                                        BaseZoneBanknifty.objects.all().delete()
+                                    else:
+                                        BaseZoneBanknifty.objects.all().delete()
+                                        LiveDataBankNifty.objects.filter(id = liveDbPrice['id']).update(in_basezone = False)
+
 
                                 
                             
@@ -295,9 +294,6 @@ def BANKNIFTY():
                                 else:
                                     ResistanceZone_Banknifty.objects.all().delete()
                                     LiveDataBankNifty.objects.filter(id = liveDbPrice['id']).update(in_resistance = False)
-                            
-                            # if not new_strike_price_minus_PE < livePrice < new_strike_price_plus_PE:
-                            #         ResistanceZone_Banknifty.objects.all().delete()
            
                             
            

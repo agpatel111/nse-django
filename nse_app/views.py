@@ -38,7 +38,7 @@ def home(request):
         'page': page,
         'paginator': paginator,
     }
-    return render(request, "Home.html", {"data": dataa, 'pagination_info': pagination_info})
+    return render(request, "tailwind/Home.html", {"data": dataa, 'pagination_info': pagination_info})
 
 
 def deleteStock(request, id):
@@ -236,19 +236,50 @@ def pcrUpdate(request):
     #     # stock_for_buy.objects.create(stocks_name=sorted_put[0]['StockName'], call_or_put='PUT')
 
     return render(request, "tailwind/PcrStock.html", { 'update_needed' : update_needed, 'success_count' : success_count, 'reject_count': reject_count })
+# from rest_framework.pagination import PageNumberPagination
 
+# class MyPaginationClass(PageNumberPagination):
+#     page_size = 10  # Number of items to be included in each page
+#     page_size_query_param = 'page_size'  # Parameter to specify the page size
+#     max_page_size = 100  # Maximum page size allowed
+
+#     def get_paginated_response(self, data):
+#         return Response({
+#             'next': self.get_next_link(),
+#             'previous': self.get_previous_link(),
+#             'count': self.page.paginator.count,
+#             'results': data
+#         })
+
+#     def get_page_size(self, request):
+#         page_size = request.query_params.get(self.page_size_query_param)
+#         if page_size is not None:
+#             try:
+#                 page_size = int(page_size)
+#                 if page_size > 0 and (not self.max_page_size or page_size <= self.max_page_size):
+#                     return page_size
+#             except (TypeError, ValueError):
+#                 pass
+#         return self.page_size
+
+from .pagination import MyPaginationClass
 class stock_details(APIView):
     # permission_classes = [IsAuthenticated]              
     # authentication_classes = [TokenAuthentication]
-
+    # pagination_class = MyPaginationClass
     def get(self, request):
+        queryset = stock_detail.objects.all().order_by("-buy_time")
+        paginator = MyPaginationClass()
+        paginated_queryset = paginator.paginate_queryset(queryset, request)
+        serializer = stockListSerializer(paginated_queryset, many=True)
+        return paginator.get_paginated_response(serializer.data)
         
-        nse_objs = stock_detail.objects.all()
-        # demo = stock_detail.objects.values_list().values()
-        serializer = stockListSerializer(nse_objs, many=True)
-        return JsonResponse(
-            {"status": True, "msg": "stock details fetched", "data": serializer.data}
-        )
+        
+        # paginated_queryset = self.pagination_class.paginate_queryset(self, nse_objs, request, view=self)
+        # # demo = stock_detail.objects.values_list().values()
+        # serializer = stockListSerializer(paginated_queryset, many=True)
+        # return self.pagination_class.get_paginated_response(serializer.data)
+
 
     def post(self, request):
         try:
@@ -415,12 +446,11 @@ class setting_nse(APIView):
 
 @api_view(['PUT'])
 def patch_stock(request,pk):
-
     try:
         data = request.data
-        obj = nse_setting.objects.get(id= pk)
+        obj = nse_setting.objects.get(id = pk)
         serializer = settingSerializer(obj, data = data, partial = True)
-        print("hello")
+
         if serializer.is_valid():
             serializer.save()
             return Response({ 'status' : True, 'msg' : 'success data', 'data' : serializer.data })
@@ -461,9 +491,12 @@ class SnippetDetail(APIView):
             raise "Http404"
 
     def get(self, request, pk, format=None):
-        snippet = self.get_object(pk)
-        serializer = settingSerializer(snippet)
-        return Response(serializer.data)        
+        try:
+            snippet = self.get_object(pk)
+            serializer = settingSerializer(snippet)
+            return Response(serializer.data)        
+        except:
+            return Response({"message": "No Data Found"})     
 
 
 class Logout(APIView):
