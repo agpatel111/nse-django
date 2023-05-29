@@ -12,11 +12,12 @@ import requests
 import json
 from datetime import datetime
 from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse
 from datetime import date, datetime
 from nse_app.services import StockView
 from nse_app.Scheduler.CoustomFun import Coustom
 from django.core.paginator import Paginator
+from django.utils import timezone
 
 
 def home(request):
@@ -25,20 +26,19 @@ def home(request):
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
 
-    dataa = []
-    for i in page.object_list:
-        BuyTime = i['buy_time']
-        BuyTimeFormt = datetime.date(BuyTime)
-        today = date.today()
-        if BuyTimeFormt == today:
-            i['today'] = 'True'
-        dataa.append(i)
+    today = date.today()
+    # for i in page.object_list:
+    #     BuyTime = i['buy_time']
+    #     BuyTimeFormt = datetime.date(BuyTime)
+    #     if BuyTimeFormt == today:
+    #         i['today'] = 'True'
+
         
-        pagination_info = {
-        'page': page,
-        'paginator': paginator,
+    pagination_info = {
+    'page': page,
+    'paginator': paginator,
     }
-    return render(request, "tailwind/Home.html", {"data": dataa, 'pagination_info': pagination_info})
+    return render(request, "tailwind/Home.html", {"data": page.object_list, 'pagination_info': pagination_info, 'today': today})
 
 
 def deleteStock(request, id):
@@ -48,14 +48,15 @@ def deleteStock(request, id):
 
 
 def PcrValue(request):
-    data = pcr_values.objects.all().order_by("-timestamp").values()
     today = date.today()
-    arr1 = []
-    for i in data:
-        BuyTimeFormt = datetime.date(i['timestamp'])
-        if BuyTimeFormt == today:
-            arr1.append(i)
-    return render(request, 'tailwind/PcrValues.html', {'data': arr1})
+    today = timezone.make_aware(timezone.datetime(today.year, today.month, today.day))
+    data = pcr_values.objects.filter(timestamp__gte = today).order_by("-timestamp")
+    # arr1 = []
+    # for i in data:
+    #     BuyTimeFormt = datetime.date(i['timestamp'])
+    #     if BuyTimeFormt == today:
+    #         arr1.append(i)
+    return render(request, 'tailwind/PcrValues.html', {'data': data})
 
 def settings(request):
     data = live.objects.all()

@@ -172,7 +172,7 @@ def SettingFun():
 def NIFTY():
     current_time = datetime.datetime.now().time()
     start_time = datetime.time(hour=9, minute=40)
-    end_time = datetime.time(hour=15, minute=30)
+    end_time = datetime.time(hour=15, minute=20)
     if start_time <= current_time <= end_time:    
         global api_data, livePrice, timestamp, filteredData, PEMax, CEMax, down_price, up_price, downSliceList, upSliceList, pcr, base_Price_down, base_Price_up
         global up_first_total_oi, down_first_total_oi, CEMaxValue, PEMaxValue
@@ -209,7 +209,7 @@ def NIFTY():
                                 base_price = base_zone_obj['base_price']
                                 
                                 file.write('------------------------------------------------> NIFTY IN BUYZONE' + str(base_price) + str(livePrice) + "\n")
-                                consoleBlue.print('------------------------------------------------> NIFTY IN BUYZONE', base_price, livePrice)
+                                consoleBlue.print('------------------------------------------------> NIFTY IN BUYZONE', base_price, '<', livePrice)
 
                                 if liveDbPrice['in_basezone'] == True:
                                     last_live_price = liveDbPrice['live_price']
@@ -264,7 +264,7 @@ def NIFTY():
                             resistance_price = resistance_zone_obj['resistance_price']
 
                             file.write('------------------------------------------------> NIFTY IN RESISTANCE ZONE' + str(resistance_price) + str(livePrice) + "\n")
-                            consoleBlue.print('------------------------------------------------> NIFTY IN RESISTANCE ZONE', resistance_price, livePrice)
+                            consoleBlue.print('------------------------------------------------> NIFTY IN RESISTANCE ZONE', resistance_price, '>',livePrice)
                             
                             if liveDbPrice['in_resistance'] == True:
                                 last_live_price = liveDbPrice['live_price']

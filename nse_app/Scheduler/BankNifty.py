@@ -176,7 +176,7 @@ def SettingFun():
 def BANKNIFTY():
     current_time = datetime.datetime.now().time()
     start_time = datetime.time(hour=9, minute=40)
-    end_time = datetime.time(hour=15, minute=30)
+    end_time = datetime.time(hour=15, minute=20)
     if start_time <= current_time <= end_time:
         global api_data, livePrice, timestamp, filteredData, PEMax, CEMax, down_price, up_price, downSliceList, upSliceList, pcr, base_Price_down, base_Price_up
         global up_first_total_oi, down_first_total_oi, CEMaxValue, PEMaxValue
@@ -215,7 +215,7 @@ def BANKNIFTY():
                                 
                                 if liveDbPrice['in_basezone'] == True:
                                     last_live_price = liveDbPrice['live_price']
-                                    consoleBlue.print('------------------------------------------------> BANKNIFTY IN BUYZONE', base_price, last_live_price)
+                                    consoleBlue.print('------------------------------------------------> BANKNIFTY IN BUYZONE', base_price, '<', last_live_price)
                                     if base_price < last_live_price:
                                         BidPrice_CE = nbpd['CE']['bidprice']
                                         squareoff_CE = '%.2f'% (( BidPrice_CE * profitPercentage_CALL ) / 100)
@@ -270,7 +270,7 @@ def BANKNIFTY():
 
                             if liveDbPrice['in_resistance'] == True:
                                 last_live_price = liveDbPrice['live_price']
-                                consoleBlue.print('------------------------------------------------> BANKNIFTY IN RESISTANCE ZONE', resistance_price, last_live_price)
+                                consoleBlue.print('------------------------------------------------> BANKNIFTY IN RESISTANCE ZONE', resistance_price, '>', last_live_price)
                                 if resistance_price > last_live_price:
                                     BidPrice_PUT = bpu['PE']['bidprice']
                                     strikePrice_PUT = bpu['strikePrice']
