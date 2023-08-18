@@ -18,7 +18,7 @@ from nse_app.services import StockView
 from nse_app.Scheduler.CoustomFun import Coustom
 from django.core.paginator import Paginator
 from django.utils import timezone
-
+from rest_framework import generics
 
 def home(request):
     data = stock_detail.objects.all().order_by("-buy_time").values()
@@ -27,12 +27,6 @@ def home(request):
     page = paginator.get_page(page_number)
 
     today = date.today()
-    # for i in page.object_list:
-    #     BuyTime = i['buy_time']
-    #     BuyTimeFormt = datetime.date(BuyTime)
-    #     if BuyTimeFormt == today:
-    #         i['today'] = 'True'
-
         
     pagination_info = {
     'page': page,
@@ -50,7 +44,7 @@ def deleteStock(request, id):
 def PcrValue(request):
     today = date.today()
     today = timezone.make_aware(timezone.datetime(today.year, today.month, today.day))
-    data = pcr_values.objects.filter(timestamp__gte = today).order_by("-timestamp")
+    data = pcr_values.objects.filter().order_by("-timestamp")
     # arr1 = []
     # for i in data:
     #     BuyTimeFormt = datetime.date(i['timestamp'])
@@ -237,6 +231,8 @@ def pcrUpdate(request):
     #     # stock_for_buy.objects.create(stocks_name=sorted_put[0]['StockName'], call_or_put='PUT')
 
     return render(request, "tailwind/PcrStock.html", { 'update_needed' : update_needed, 'success_count' : success_count, 'reject_count': reject_count })
+
+
 # from rest_framework.pagination import PageNumberPagination
 
 # class MyPaginationClass(PageNumberPagination):
@@ -262,6 +258,14 @@ def pcrUpdate(request):
 #             except (TypeError, ValueError):
 #                 pass
 #         return self.page_size
+
+class accountDetailsListCreateView(generics.ListCreateAPIView):
+    queryset = AccountCredential.objects.all()
+    serializer_class = accountDetailsSerializer
+    
+class accountDetailsRetrieveUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = AccountCredential.objects.all()
+    serializer_class = accountDetailsSerializer
 
 from .pagination import MyPaginationClass
 class stock_details(APIView):

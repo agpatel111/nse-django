@@ -3,7 +3,7 @@ import pyotp
 from smartapi import SmartConnect
 from datetime import date
 import requests
-
+from nse_app.models import *
 
 
 
@@ -16,13 +16,24 @@ def sellFunOption(strikePrice, BidPrice, squareoff, stoploss, OptionId, lots):
     stoploss_sm = stoploss
     percentions_sm = OptionId
     lot_size = lots
+    
+    
+    obj = AccountCredential.objects.all().values().last()
+    username = obj['username']
+    apikey = obj['apikey']
+    password = obj['password']
+    t_otp = obj['t_otp']
 
-    username = 'H117838'
-    apikey = 'SqtdCpAg'
-    pwd = '4689'
-    totp = pyotp.TOTP("K7QDKSEXWD7KRO7EVQCUHTFK2U").now()
+    username = username
+    apikey = apikey
+    pwd = password
+    totp = pyotp.TOTP(t_otp).now()
     obj = SmartConnect(api_key=apikey)
     dataa = obj.generateSession(username, pwd, totp)
+    
+    
+    # Expiry Date
+    expiry_date = date(2023, 6, 8)
 
     def place_order_pcr(token, symbol, qty,exch_seg ,buy_sell,ordertype ,price, variety='ROBO', triggerprice=5):
         total_qty = float(qty) * lot_size
@@ -98,14 +109,12 @@ def sellFunOption(strikePrice, BidPrice, squareoff, stoploss, OptionId, lots):
         elif exch_seg == 'NFO' and (instrumenttype == 'OPTSTK' or instrumenttype == 'OPTIDX'):
             return df[(df['exch_seg'] == 'NFO') & (df['expiry'] == expiry_day) & (df['instrumenttype'] == instrumenttype) & (df['name'] == symbol) & (df['strike'] == strike_price) & (df['symbol'].str.endswith(pe_ce))].sort_values(by=['expiry'])
 
-    # Expiry Date
-    a = date(2023, 6, 8)
 
     ## banknifty put
     if percentions_sm == 3:
         symbol = 'BANKNIFTY'
         pe_strike_symbol = getTokenInfo(
-            symbol, 'NFO', 'OPTIDX', base_strike_price_sm, 'PE', a).iloc[0]
+            symbol, 'NFO', 'OPTIDX', base_strike_price_sm, 'PE', expiry_date).iloc[0]
         place_order(pe_strike_symbol['token'], pe_strike_symbol['symbol'],
                     pe_strike_symbol['lotsize'], 'BUY', 'MARKET', 0, 'NORMAL', 'NFO')
 
@@ -114,7 +123,7 @@ def sellFunOption(strikePrice, BidPrice, squareoff, stoploss, OptionId, lots):
         symbol = 'BANKNIFTY'
 
         ce_strike_symbol = getTokenInfo(
-            symbol, 'NFO', 'OPTIDX', base_strike_price_sm, 'CE', a).iloc[0]
+            symbol, 'NFO', 'OPTIDX', base_strike_price_sm, 'CE', expiry_date).iloc[0]
         place_order(ce_strike_symbol['token'], ce_strike_symbol['symbol'],
                     ce_strike_symbol['lotsize'], 'SELL', 'MARKET', 0, 'NORMAL', 'NFO')
 
@@ -123,7 +132,7 @@ def sellFunOption(strikePrice, BidPrice, squareoff, stoploss, OptionId, lots):
         symbol = 'NIFTY'
         qty = 25
         pe_strike_symbol = getTokenInfo(
-            symbol, 'NFO', 'OPTIDX', base_strike_price_sm, 'PE', a).iloc[0]
+            symbol, 'NFO', 'OPTIDX', base_strike_price_sm, 'PE', expiry_date).iloc[0]
         place_order(pe_strike_symbol['token'], pe_strike_symbol['symbol'],
                     pe_strike_symbol['lotsize'], 'SELL', 'MARKET', 0, 'NORMAL', 'NFO', qty)
 
@@ -131,7 +140,7 @@ def sellFunOption(strikePrice, BidPrice, squareoff, stoploss, OptionId, lots):
     elif percentions_sm == 2:
         symbol = 'NIFTY'
         ce_strike_symbol = getTokenInfo(
-            symbol, 'NFO', 'OPTIDX', base_strike_price_sm, 'CE', a).iloc[0]
+            symbol, 'NFO', 'OPTIDX', base_strike_price_sm, 'CE', expiry_date).iloc[0]
         place_order(ce_strike_symbol['token'], ce_strike_symbol['symbol'],
                     ce_strike_symbol['lotsize'], 'SELL', 'MARKET', 0, 'NORMAL', 'NFO')
 
@@ -139,7 +148,7 @@ def sellFunOption(strikePrice, BidPrice, squareoff, stoploss, OptionId, lots):
     elif percentions_sm == 6:
         symbol = 'BANKNIFTY'
         ce_strike_symbol = getTokenInfo(
-            symbol, 'NFO', 'OPTIDX', base_strike_price_sm, 'CE', a).iloc[0]
+            symbol, 'NFO', 'OPTIDX', base_strike_price_sm, 'CE', expiry_date).iloc[0]
         place_order_pcr(ce_strike_symbol['token'], ce_strike_symbol['symbol'],
                     ce_strike_symbol['lotsize'], 'SELL', 'MARKET', 0, 'NORMAL', 'NFO')
 
@@ -147,7 +156,7 @@ def sellFunOption(strikePrice, BidPrice, squareoff, stoploss, OptionId, lots):
     elif percentions_sm == 9:
         symbol = 'BANKNIFTY'
         ce_strike_symbol = getTokenInfo(
-            symbol, 'NFO', 'OPTIDX', base_strike_price_sm, 'PE', a).iloc[0]
+            symbol, 'NFO', 'OPTIDX', base_strike_price_sm, 'PE', expiry_date).iloc[0]
         place_order_pcr(ce_strike_symbol['token'], ce_strike_symbol['symbol'],
                     ce_strike_symbol['lotsize'], 'SELL', 'MARKET', 0, 'NORMAL', 'NFO')
         
@@ -155,7 +164,7 @@ def sellFunOption(strikePrice, BidPrice, squareoff, stoploss, OptionId, lots):
     elif percentions_sm == 8:
         symbol = 'NIFTY'
         ce_strike_symbol = getTokenInfo(
-            symbol, 'NFO', 'OPTIDX', base_strike_price_sm, 'CE', a).iloc[0]
+            symbol, 'NFO', 'OPTIDX', base_strike_price_sm, 'CE', expiry_date).iloc[0]
         place_order_pcr(ce_strike_symbol['token'], ce_strike_symbol['symbol'],
                     ce_strike_symbol['lotsize'], 'SELL', 'MARKET', 0, 'NORMAL', 'NFO')
 
@@ -163,7 +172,7 @@ def sellFunOption(strikePrice, BidPrice, squareoff, stoploss, OptionId, lots):
     elif percentions_sm == 10:
         symbol = 'NIFTY'
         ce_strike_symbol = getTokenInfo(
-            symbol, 'NFO', 'OPTIDX', base_strike_price_sm, 'PE', a).iloc[0]
+            symbol, 'NFO', 'OPTIDX', base_strike_price_sm, 'PE', expiry_date).iloc[0]
         place_order_pcr(ce_strike_symbol['token'], ce_strike_symbol['symbol'],
                     ce_strike_symbol['lotsize'], 'SELL', 'MARKET', 0, 'NORMAL', 'NFO')
         

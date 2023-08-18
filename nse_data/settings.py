@@ -43,6 +43,8 @@ INSTALLED_APPS = [
     "rest_framework",
     "corsheaders",
     "rest_framework.authtoken",
+    "debug_toolbar",
+
    
     
 ]
@@ -57,6 +59,11 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
+]
+
+INTERNAL_IPS = [
+    "192.168.1.235",
 ]
 
 # REST_FRAMEWORK = {
@@ -157,8 +164,8 @@ STATIC_URL = "static/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': True,
-}
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': True,
+# }
 

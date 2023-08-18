@@ -16,6 +16,8 @@ urlpatterns = [
     path("api-auth/", include("rest_framework.urls")),
     path("admin/", admin.site.urls),
     path("", include("nse_app.urls")),
+    path("__debug__/", include("debug_toolbar.urls")),
+
 ]
 
 
@@ -23,12 +25,12 @@ today = date.today()
 start_date = str(today) + ' 09:15:00'
 end_date = str(today) + ' 15:31:00'
 
-scheduler = BackgroundScheduler()
+# scheduler = BackgroundScheduler()
 
 # # scheduler.add_job(StockPut, "interval", minutes=0.5, start_date=start_date, end_date=end_date) 
 # # scheduler.add_job(StockCall, "interval", minutes=0.5, start_date=start_date, end_date=end_date) 
-scheduler.add_job(PcrValues, "interval", minutes=1, id='PcrValues_001')
-scheduler.add_job(NIFTY, "interval", minutes=0.27, id='nifty_001',) 
-scheduler.add_job(BANKNIFTY, "interval", minutes=0.27, id='banknifty_001')
+# scheduler.add_job(PcrValues, "interval", minutes=1, id='PcrValues_001')
+# scheduler.add_job(NIFTY, "interval", minutes=0.27, id='nifty_001',) 
+# scheduler.add_job(BANKNIFTY, "interval", minutes=0.27, id='banknifty_001')
 
-scheduler.start()
+# scheduler.start()

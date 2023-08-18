@@ -41,6 +41,15 @@ class nse_setting(models.Model):
     
     class Meta:
         db_table = 'settings'
+    
+class AccountCredential(models.Model):
+    username = models.CharField(max_length=50)
+    apikey = models.CharField(max_length=50)
+    password = models.CharField(max_length=10)
+    t_otp = models.CharField(max_length=50)
+    
+    class Meta:
+        db_table = 'account_credential'
 
 class stock_detail(models.Model):
     

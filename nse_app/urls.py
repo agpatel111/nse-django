@@ -19,6 +19,9 @@ urlpatterns = [
     path('stockname', views.PcrStockName.as_view(), name = 'stockname'),
      
     ## SETTING API
+    path('accountdetail/', views.accountDetailsListCreateView.as_view(), name='accountDetailsListCreateView'),
+    path('accountdetail/<int:pk>', views.accountDetailsRetrieveUpdateDeleteView.as_view(), name='accountDetailsRetrieveUpdateDeleteView'),
+    
     path('setting_nse', views.setting_nse.as_view(), name = 'setting_nse'), 
     path("get_setting_data/<int:pk>", views.SnippetDetail.as_view(), name="setting_nse"),
     path('patch_stock/<int:pk>', views.patch_stock, name = 'patch-stock'),

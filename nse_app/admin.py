@@ -21,3 +21,7 @@ class live(admin.ModelAdmin):
 @admin.register(pcr_option)
 class live(admin.ModelAdmin):
     list_display = ['OptionName', 'AtSetPcr', 'PcrStopLoss', 'LivePcr']
+
+@admin.register(AccountCredential)
+class live(admin.ModelAdmin):
+    list_display = ['username', 'apikey', 'password', 't_otp']

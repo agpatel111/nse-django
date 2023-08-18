@@ -7,7 +7,7 @@ class settingSerializer(serializers.ModelSerializer):
     class Meta:
         model = nse_setting
         # fields = "__all__"
-        exclude = ['you_can_buy', 'id']
+        exclude = ['you_can_buy']
 
 class stockListSerializer(serializers.ModelSerializer):
     percentage = settingSerializer()
@@ -36,6 +36,12 @@ class pcr_stock_nameSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = pcr_stock_name
+        fields = "__all__"
+
+class accountDetailsSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = AccountCredential
         fields = "__all__"
 
 
