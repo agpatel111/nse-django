@@ -70,8 +70,8 @@ class stock_detail(models.Model):
     stock_name = models.CharField(max_length=50, default='NA', blank=True)
     admin_call = models.BooleanField(default=False)
     call_put = models.CharField(max_length=50, blank=True, choices=call_or_put)
-    qnty = models.IntegerField(blank=True, default=0)
-    net_p_l = models.FloatField(blank=True, default=0)
+    qty = models.IntegerField(blank=True, default=0)
+    order_id = models.CharField(max_length=50, blank=True)
 
     def __str__(self):
         return self.percentage,'->', self.buy_price

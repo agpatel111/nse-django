@@ -778,3 +778,26 @@ Expecting value: line 1 column 1 (char 0)
 10-Aug-2023 14:44:10--> 44650 < 44552.2 < 44750 Put
 ------------------------------------------------> BANKNIFTY IN BUYZONE44650.044552.2
 10-Aug-2023 14:44:10--> 44650 < 44552.2 < 44750 Put
+------------------------------------------------> BANKNIFTY IN BUYZONE44650.044663.95
+------------------------------------------------> SuccessFully Buy IN BANKNIFTY CALL{"buy_price": 110.35, "base_strike_price": 44600, "live_Strike_price": 44663.95, "sell_price": "120.28", "stop_loseprice": "99.31", "percentage": 1, "call_put": "CALL"}
+24-Aug-2023 11:38:05--> 44585 < 44663.95 < 44650 Call
+24-Aug-2023 11:38:05--> 44585 < 44663.95 < 44650 Call
+list index out of range
+list index out of range
+24-Aug-2023 11:42:35--> 44585 < 44662.3 < 44650 Call
+------------------------------------------------> BANKNIFTY IN BUYZONE150.044704.05
+------------------------------------------------> SuccessFully Buy IN BANKNIFTY CALL{"buy_price": 135.5, "base_strike_price": 44600, "live_Strike_price": 44704.05, "sell_price": "147.69", "stop_loseprice": "121.95", "percentage": 1, "call_put": "CALL"}
+single positional indexer is out-of-bounds
+------------------------------------------------> BANKNIFTY IN BUYZONE150.044704.05
+------------------------------------------------> SuccessFully Buy IN BANKNIFTY CALL{"buy_price": 135.5, "base_strike_price": 44600, "live_Strike_price": 44704.05, "sell_price": "147.69", "stop_loseprice": "121.95", "percentage": 1, "call_put": "CALL"}
+------------------------------------------------> BANKNIFTY IN BUYZONE150.044700.85
+------------------------------------------------> SuccessFully Buy IN BANKNIFTY CALL{"buy_price": 140.75, "base_strike_price": 44600, "live_Strike_price": 44700.85, "sell_price": "153.42", "stop_loseprice": "126.67", "percentage": 1, "call_put": "CALL"}
+------------------------------------------------> BANKNIFTY IN BUYZONE150.044694.15
+------------------------------------------------> SuccessFully Buy IN BANKNIFTY CALL{"buy_price": 129, "base_strike_price": 44600, "live_Strike_price": 44694.15, "sell_price": "140.61", "stop_loseprice": "116.10", "percentage": 1, "call_put": "CALL"}
+------------------------------------------------> BANKNIFTY IN BUYZONE150.044671.9
+------------------------------------------------> SuccessFully Buy IN BANKNIFTY CALL{"buy_price": 105.9, "base_strike_price": 44600, "live_Strike_price": 44671.9, "sell_price": "115.43", "stop_loseprice": "95.31", "percentage": 1, "call_put": "CALL"}
+24-Aug-2023 12:21:06--> 44585 < 44613.55 < 44650 Call
+------------------------------------------------> BANKNIFTY IN BUYZONE44650.044612.8
+------------------------------------------------> BANKNIFTY IN BUYZONE44650.044642.25
+------------------------------------------------> BANKNIFTY IN BUYZONE44650.044616.15
+Expecting value: line 1 column 1 (char 0)

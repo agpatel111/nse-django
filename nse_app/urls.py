@@ -13,9 +13,12 @@ urlpatterns = [
     path('changesettings/', views.changesettings, name = 'changesettings'),
 
     path('pcrvalues/', views.PcrValue, name = 'pcrvalues'),
-    path('pcr/', views.pcrUpdate, name = 'pcrUpdate'),
+    path('pcrUpdate/', views.pcrUpdate, name = 'pcrUpdate'),
+
+    path('buyFutureOp', views.buyFutureOp.as_view(), name = 'buyFutureOp'),
     
     path('stocks', views.stock_details.as_view(), name = 'stock_detail'),
+    path('liveStocks', views.liveStocks.as_view(), name = 'liveStocks'), 
     path('stockname', views.PcrStockName.as_view(), name = 'stockname'),
      
     ## SETTING API

@@ -1,6 +1,6 @@
 import pandas as pd
 import pyotp
-from smartapi import SmartConnect
+from SmartApi import SmartConnect
 from datetime import date
 import requests
 from nse_app.models import *
@@ -8,7 +8,7 @@ from nse_app.models import *
 
 
 
-def sellFunOption(strikePrice, BidPrice, squareoff, stoploss, OptionId, lots):
+def sellFunOption(strikePrice, BidPrice, squareoff, stoploss, OptionId, lots, id, exprityDate):
    
     base_strike_price_sm = float(strikePrice)
     buy_price_sm = str(BidPrice)
@@ -33,7 +33,7 @@ def sellFunOption(strikePrice, BidPrice, squareoff, stoploss, OptionId, lots):
     
     
     # Expiry Date
-    expiry_date = date(2023, 6, 8)
+    expiry_date = exprityDate
 
     def place_order_pcr(token, symbol, qty,exch_seg ,buy_sell,ordertype ,price, variety='ROBO', triggerprice=5):
         total_qty = float(qty) * lot_size
@@ -54,10 +54,11 @@ def sellFunOption(strikePrice, BidPrice, squareoff, stoploss, OptionId, lots):
                 "stoploss": '0',
                 "quantity":total_qty,
             }
-            print(orderparams)
-            orderId = obj.placeOrder(orderparams)
+            # orderId = obj.placeOrder(orderparams)
+            orderId = 0
             print("The order id is: {}".format(orderId))
-            # stock_detail.objects.filter(id = get_id).update(orderid = orderId)
+            stock_detail.objects.filter(id = id).update(order_id = orderId, qty = total_qty)
+
         except Exception as e:
             print(
                 "Order placement failed: {}".format(e.message))                   
@@ -91,14 +92,14 @@ def sellFunOption(strikePrice, BidPrice, squareoff, stoploss, OptionId, lots):
                 "Order placement failed: {}".format(e.message))
 
     
-    url = 'https://margincalculator.angelbroking.com/OpenAPI_File/files/OpenAPIScripMaster.json'
-    d = requests.get(url).json()
-    token_df = pd.DataFrame.from_dict(d)
-    token_df['expiry'] = pd.to_datetime(
-        token_df['expiry']).apply(lambda x: x.date())
-    token_df = token_df.astype({'strike': float})
-
     def getTokenInfo(symbol, exch_seg='NSE', instrumenttype='OPTIDX', strike_price='', pe_ce='CE', expiry_day=None):
+        url = 'https://margincalculator.angelbroking.com/OpenAPI_File/files/OpenAPIScripMaster.json'
+        d = requests.get(url).json()
+        token_df = pd.DataFrame.from_dict(d)
+        token_df['expiry'] = pd.to_datetime(
+            token_df['expiry']).apply(lambda x: x.date())
+        token_df = token_df.astype({'strike': float})
+
         df = token_df
         strike_price = strike_price*100
         if exch_seg == 'NSE':
@@ -113,8 +114,7 @@ def sellFunOption(strikePrice, BidPrice, squareoff, stoploss, OptionId, lots):
     ## banknifty put
     if percentions_sm == 3:
         symbol = 'BANKNIFTY'
-        pe_strike_symbol = getTokenInfo(
-            symbol, 'NFO', 'OPTIDX', base_strike_price_sm, 'PE', expiry_date).iloc[0]
+        pe_strike_symbol = getTokenInfo(symbol, 'NFO', 'OPTIDX', base_strike_price_sm, 'PE', expiry_date).iloc[0]
         place_order(pe_strike_symbol['token'], pe_strike_symbol['symbol'],
                     pe_strike_symbol['lotsize'], 'BUY', 'MARKET', 0, 'NORMAL', 'NFO')
 
@@ -122,8 +122,7 @@ def sellFunOption(strikePrice, BidPrice, squareoff, stoploss, OptionId, lots):
     elif percentions_sm == 1:
         symbol = 'BANKNIFTY'
 
-        ce_strike_symbol = getTokenInfo(
-            symbol, 'NFO', 'OPTIDX', base_strike_price_sm, 'CE', expiry_date).iloc[0]
+        ce_strike_symbol = getTokenInfo(symbol, 'NFO', 'OPTIDX', base_strike_price_sm, 'CE', expiry_date).iloc[0]
         place_order(ce_strike_symbol['token'], ce_strike_symbol['symbol'],
                     ce_strike_symbol['lotsize'], 'SELL', 'MARKET', 0, 'NORMAL', 'NFO')
 
@@ -131,51 +130,44 @@ def sellFunOption(strikePrice, BidPrice, squareoff, stoploss, OptionId, lots):
     elif percentions_sm == 4:
         symbol = 'NIFTY'
         qty = 25
-        pe_strike_symbol = getTokenInfo(
-            symbol, 'NFO', 'OPTIDX', base_strike_price_sm, 'PE', expiry_date).iloc[0]
+        pe_strike_symbol = getTokenInfo(symbol, 'NFO', 'OPTIDX', base_strike_price_sm, 'PE', expiry_date).iloc[0]
         place_order(pe_strike_symbol['token'], pe_strike_symbol['symbol'],
                     pe_strike_symbol['lotsize'], 'SELL', 'MARKET', 0, 'NORMAL', 'NFO', qty)
 
     ## nifty call
     elif percentions_sm == 2:
         symbol = 'NIFTY'
-        ce_strike_symbol = getTokenInfo(
-            symbol, 'NFO', 'OPTIDX', base_strike_price_sm, 'CE', expiry_date).iloc[0]
+        ce_strike_symbol = getTokenInfo(symbol, 'NFO', 'OPTIDX', base_strike_price_sm, 'CE', expiry_date).iloc[0]
         place_order(ce_strike_symbol['token'], ce_strike_symbol['symbol'],
                     ce_strike_symbol['lotsize'], 'SELL', 'MARKET', 0, 'NORMAL', 'NFO')
 
     ## banknifty call pcr
     elif percentions_sm == 6:
         symbol = 'BANKNIFTY'
-        ce_strike_symbol = getTokenInfo(
-            symbol, 'NFO', 'OPTIDX', base_strike_price_sm, 'CE', expiry_date).iloc[0]
+        ce_strike_symbol = getTokenInfo(symbol, 'NFO', 'OPTIDX', base_strike_price_sm, 'CE', expiry_date).iloc[0]
         place_order_pcr(ce_strike_symbol['token'], ce_strike_symbol['symbol'],
                     ce_strike_symbol['lotsize'], 'SELL', 'MARKET', 0, 'NORMAL', 'NFO')
 
     ## banknifty put pcr
     elif percentions_sm == 9:
         symbol = 'BANKNIFTY'
-        ce_strike_symbol = getTokenInfo(
-            symbol, 'NFO', 'OPTIDX', base_strike_price_sm, 'PE', expiry_date).iloc[0]
+        ce_strike_symbol = getTokenInfo(symbol, 'NFO', 'OPTIDX', base_strike_price_sm, 'PE', expiry_date).iloc[0]
         place_order_pcr(ce_strike_symbol['token'], ce_strike_symbol['symbol'],
                     ce_strike_symbol['lotsize'], 'SELL', 'MARKET', 0, 'NORMAL', 'NFO')
         
     ## nifty call pcr
     elif percentions_sm == 8:
         symbol = 'NIFTY'
-        ce_strike_symbol = getTokenInfo(
-            symbol, 'NFO', 'OPTIDX', base_strike_price_sm, 'CE', expiry_date).iloc[0]
+        ce_strike_symbol = getTokenInfo(symbol, 'NFO', 'OPTIDX', base_strike_price_sm, 'CE', expiry_date).iloc[0]
         place_order_pcr(ce_strike_symbol['token'], ce_strike_symbol['symbol'],
                     ce_strike_symbol['lotsize'], 'SELL', 'MARKET', 0, 'NORMAL', 'NFO')
 
     ## nifty put pcr
     elif percentions_sm == 10:
         symbol = 'NIFTY'
-        ce_strike_symbol = getTokenInfo(
-            symbol, 'NFO', 'OPTIDX', base_strike_price_sm, 'PE', expiry_date).iloc[0]
+        ce_strike_symbol = getTokenInfo(symbol, 'NFO', 'OPTIDX', base_strike_price_sm, 'PE', expiry_date).iloc[0]
         place_order_pcr(ce_strike_symbol['token'], ce_strike_symbol['symbol'],
                     ce_strike_symbol['lotsize'], 'SELL', 'MARKET', 0, 'NORMAL', 'NFO')
-        
         
         
         
@@ -288,3 +280,65 @@ def sellFunStock(strikePrice, BidPrice, squareoff, stoploss, OptionId, lots, sto
         place_order_pcr(ce_strike_symbol['token'],ce_strike_symbol['symbol'],ce_strike_symbol['lotsize'],'SELL','MARKET',0,'NORMAL','NFO')
         print("stock pe", ce_strike_symbol)   
 
+
+
+def getTokenInfoFuture(symbol, exch_seg='NSE', instrumenttype='OPTIDX', strike_price='', pe_ce='CE', expiry_day=None):
+
+    url = 'https://margincalculator.angelbroking.com/OpenAPI_File/files/OpenAPIScripMaster.json'
+    d = requests.get(url).json()
+    token_df = pd.DataFrame.from_dict(d)
+    token_df['expiry'] = pd.to_datetime(token_df['expiry'])
+    token_df = token_df.astype({'strike': float})
+
+    df = token_df
+    strike_price = strike_price*100
+
+    ## OPTION FUTURE
+    if exch_seg == 'NFO' and ((instrumenttype == 'FUTSTK') or (instrumenttype == 'FUTIDX')):
+        return df[(df['exch_seg'] == 'NFO') & (df['instrumenttype'] == instrumenttype) & (df['name'] == symbol) & (df['symbol'].str.endswith('FUT'))].sort_values(by=['expiry'])
+        
+
+def optionFuture(option, lots):
+    f_token = getTokenInfoFuture(option ,'NFO', 'FUTIDX', '', '').iloc[0]
+    symbol = f_token['symbol']
+    token = f_token['token']
+    lot = f_token['lotsize']
+
+    username = 'H117838'
+    apikey = 'SqtdCpAg'
+    pwd = '4689'
+    totp = pyotp.TOTP('K7QDKSEXWD7KRO7EVQCUHTFK2U').now()
+    obj = SmartConnect(api_key=apikey)
+    obj.generateSession(username, pwd, totp)
+
+    ltp = obj.ltpData('NFO', symbol, token)
+    
+    def place_order(token, symbol, qty, exch_seg, buy_sell, ordertype, price):
+        qty = int(qty) * lots
+        # qty = int(qty) * 20
+        qty = str(qty)
+        try:
+            orderparams = {
+                "variety": 'NORMAL',
+                "tradingsymbol": symbol,
+                "symboltoken": token,
+                "transactiontype": buy_sell,
+                'exchange': exch_seg,
+                "ordertype": ordertype,
+                "producttype": 'CARRYFORWARD',
+                "duration": "DAY",
+                "price": price,
+                "squareoff": "0",
+                "stoploss": "0",
+                "quantity": qty,
+            }
+            print(ltp)
+            return ltp['data']['ltp']
+            # orderId = obj.placeOrder(orderparams)
+            # print(orderId)
+            
+        except Exception as e:
+            print(
+                "Order placement failed: {}".format(e.message))
+    
+    return place_order(token, symbol, lot, 'NFO', 'BUY', 'MARKET', 0)

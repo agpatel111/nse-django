@@ -18,9 +18,43 @@ consoleRed = Console(style='red')
 
 def BankniftyApiFun():
     global api_data, livePrice, timestamp, filteredData, PEMax, CEMax, down_price, up_price, downSliceList, upSliceList, pcr, base_Price_down, base_Price_up
-    global up_first_total_oi, down_first_total_oi, CEMaxValue, PEMaxValue
+    global up_first_total_oi, down_first_total_oi, CEMaxValue, PEMaxValue, exprityDate
     
+
+    class InnerClass():
+        def __init__(self, symbol = 'BANKNIFTY'):
+            self.symbol = symbol
+            self.headers = {
+                'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
+                            'Chrome/80.0.3987.149 Safari/537.36',
+                'accept-language': 'en,gu;q=0.9,hi;q=0.8',
+                'accept-encoding': 'gzip, deflate, br'
+            }
+
+        def fetch_data(self):
+            url = f'https://www.nseindia.com/api/option-chain-indices?symbol={self.symbol}'
+            response = requests.get(url, headers=self.headers)
+            response.raise_for_status()
+            data = response.json()
+            return data
+    InnerClass_ = InnerClass()
+    print(InnerClass_.fetch_data())
     
+    def outer_function():
+        class InnerClass:
+            def __init__(self):
+                self.value = 55
+            def DEMO(self):
+                print(self.value)
+        # return InnerClass
+
+        # inner_class = outer_function()
+        instance = InnerClass()
+        instance.DEMO()
+    outer_function()
+    # print(instance.value)
+            
+
     headers =  {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, '
                             'like Gecko) '
                             'Chrome/80.0.3987.149 Safari/537.36',
@@ -37,13 +71,10 @@ def BankniftyApiFun():
     livePrice = api_data['records']['underlyingValue']
     filteredData = api_data['filtered']['data']
 
-    # date_string = api_data['records']['expiryDates'][0]
-    # date_format = "%d-%b-%Y"
-    # date_object = dt.strptime(date_string, date_format).date()
-    # year = date_object.year
-    # month = date_object.month
-    # day = date_object.day
-    # exprityDateStock = date(year, month, day)
+    date_string = api_data['records']['expiryDates'][0]
+    date_format = "%d-%b-%Y"
+    date_object = dt.strptime(date_string, date_format).date()
+    exprityDate = date(date_object.year, date_object.month, date_object.day)
 
 
     down_price = Coustom.downPrice(filteredData, livePrice)
@@ -100,14 +131,14 @@ def BankniftyApiFun():
 
 def SettingFun():
     
-    global stock_details, nseSetting, live_obj, pcr_options, live_call
+    global stock_details, nseSetting, live_obj, pcr_options, is_live_banknifty
     global PcrObj_Call_ID, banknifty_pcr_stoploss_CALL, banknifty_at_set_pcr_CALL, banknifty_live_pcr, PcrObj_Put_ID, banknifty_pcr_stoploss_PUT, banknifty_at_set_pcr_PUT
 
     ## SETTINGS 
     stock_details = stock_detail.objects.values_list().values()
     nseSetting = nse_setting.objects.values_list().values()
     live_obj = live.objects.values_list().values()
-    live_call = live_obj[0]['live_banknifty']
+    # live_call = live_obj[0]['live_banknifty']
     pcr_options = pcr_option.objects.values_list().values()
     
     for pcrobj in pcr_options:
@@ -123,11 +154,13 @@ def SettingFun():
             banknifty_live_pcr = pcrobj['LivePcr']
         
     ## API SETTINGS
-    settings_url = 'https://zerodha.harmistechnology.com/setting_nse'
+    settings_url = 'http://192.168.1.235:8000/settings'
     response = requests.get(settings_url)
     settings_data = response.text
     settings_data = json.loads(settings_data)
     settings_data_api = settings_data['data']
+    is_live_banknifty = settings_data['liveSettings'][0]['live_banknifty']
+    is_op_fut_banknifty = settings_data['liveSettings'][0]['op_fut_banknifty']
     
     global set_CALL_pcr, basePlus_CALL, profitPercentage_CALL, lossPercentage_CALL, lot_size_CALL, lot_size_pcr_call, set_call_pcr
     global set_PUT_pcr, basePlus_PUT, profitPercentage_PUT, lossPercentage_PUT, lot_size_PUT, set_put_pcr, lot_size_pcr_put
@@ -140,8 +173,8 @@ def SettingFun():
             profitPercentage_CALL = k['profit_percentage']
             lossPercentage_CALL = k['loss_percentage']
             lot_size_CALL = k['quantity_bn']
-            used_logic_call = 'old'
-            oi_total_call = 0
+            used_logic_call = k['used_logic']
+            oi_total_call = k['oi_total']
             
         if k['option'] == "BANKNIFTY PE":       ## Name as per server DB
             set_PUT_pcr = k['set_pcr']
@@ -149,8 +182,8 @@ def SettingFun():
             profitPercentage_PUT = k['profit_percentage']
             lossPercentage_PUT = k['loss_percentage']
             lot_size_PUT = k['quantity_bn'] 
-            used_logic_put = 'old'
-            oi_total_put = 0
+            used_logic_put = k['used_logic']
+            oi_total_put = k['oi_total']
             
         if k['option'] == 'BANKNIFTY_BASE_CE':       ## Name as per server DB
             set_call_pcr = k['set_pcr']
@@ -194,15 +227,16 @@ def SettingFun():
 
 
 def BANKNIFTY():
-    current_time = datetime.datetime.now().time()
-    start_time = datetime.time(hour=9, minute=40)
-    end_time = datetime.time(hour=15, minute=20)
-    if start_time <= current_time <= end_time:
-        global api_data, livePrice, timestamp, filteredData, PEMax, CEMax, down_price, up_price, downSliceList, upSliceList, pcr, base_Price_down, base_Price_up
-        global up_first_total_oi, down_first_total_oi, CEMaxValue, PEMaxValue
+        current_time = datetime.datetime.now().time()
+        start_time = datetime.time(hour=9, minute=40)
+        end_time = datetime.time(hour=15, minute=20)
         
-        file = open("bank_nifty.txt", "a")
-        try:
+        if start_time <= current_time <= end_time:
+            global api_data, livePrice, timestamp, filteredData, PEMax, CEMax, down_price, up_price, downSliceList, upSliceList, pcr, base_Price_down, base_Price_up
+            global up_first_total_oi, down_first_total_oi, CEMaxValue, PEMaxValue, exprityDate
+            
+            file = open("bank_nifty.txt", "a")
+        # try:
             BankniftyApiFun()
 
             SettingFun()
@@ -245,15 +279,15 @@ def BANKNIFTY():
                                             stop_loss_CE = '%.2f'% (BidPrice_CE - (BidPrice_CE * lossPercentage_CALL ) / 100)
                                             strikePrice_CE = nbpd['strikePrice']
                                             ## ADD DATA TO DATABASE 
-                                            stock_detail.objects.create(status="BUY",buy_price = BidPrice_CE, base_strike_price=strikePrice_CE, live_Strike_price=livePrice, live_brid_price=BidPrice_CE, sell_price= sellPrice_CE ,stop_loseprice=stop_loss_CE, percentage_id=OptionId_CALL , call_put = "CALL", buy_pcr = '%.2f'% (pcr) )
+                                            obj_banknifty_15min = stock_detail.objects.create(status="BUY",buy_price = BidPrice_CE, base_strike_price=strikePrice_CE, live_Strike_price=livePrice, live_brid_price=BidPrice_CE, sell_price= sellPrice_CE ,stop_loseprice=stop_loss_CE, percentage_id=OptionId_CALL , call_put = "CALL", buy_pcr = '%.2f'% (pcr) )
 
                                             postData = { "buy_price": BidPrice_CE, "base_strike_price":strikePrice_CE, "live_Strike_price":livePrice, "sell_price": sellPrice_CE, "stop_loseprice": stop_loss_CE, 'percentage': OptionId_CALL, 'call_put': "CALL"}
                                             postData = json.dumps(postData)
                                             file.write('------------------------------------------------> SuccessFully Buy IN BANKNIFTY CALL' + postData + "\n")
                                             consoleGreen.print('SuccessFully Buy IN BANKNIFTY CALL: ',postData)                
                                             ## SMART API BUY FUNCTION
-                                            if live_call == True:
-                                                sellFunOption(strikePrice_CE, BidPrice_CE, squareoff_CE, stoploss_CE, OptionId_CALL, lot_size_CALL)
+                                            if is_live_banknifty == True:
+                                                sellFunOption(strikePrice_CE, BidPrice_CE, squareoff_CE, stoploss_CE, OptionId_CALL, lot_size_CALL, obj_banknifty_15min.id, exprityDate)
                                             
                                             LiveDataBankNifty.objects.filter(id = liveDbPrice['id']).update(in_basezone = False)
                                             BaseZoneBanknifty.objects.all().delete()
@@ -262,9 +296,28 @@ def BANKNIFTY():
                                             LiveDataBankNifty.objects.filter(id = liveDbPrice['id']).update(in_basezone = False)
 
 
-
             if used_logic_call == 'old':
-                pass                     
+                for nbpd in base_Price_down:
+                    if setOneStock_CALL == True:
+                        if setBuyCondition_CALL == True:
+                            if pcr >= set_CALL_pcr:
+                                call_call = "CALL"
+                                basePricePlus_CALL = nbpd['strikePrice'] + basePlus_CALL
+                                basePricePlus_CALL_a = basePricePlus_CALL - 15
+                                print('-------------------------------------------------------------------> BANKNIFTY CE:',basePricePlus_CALL_a,'<', livePrice,'<', basePricePlus_CALL)
+                                if basePricePlus_CALL_a <= livePrice and livePrice <= basePricePlus_CALL:
+                                    BidPrice_CE = nbpd['CE']['bidprice']
+                                    squareoff_CE = '%.2f'% (( BidPrice_CE * profitPercentage_CALL ) / 100)
+                                    stoploss_CE = '%.2f'% ((BidPrice_CE * lossPercentage_CALL ) / 100)
+                                    sellPrice_CE = '%.2f'% ((BidPrice_CE * profitPercentage_CALL) / 100 + BidPrice_CE)
+                                    stop_loss_CE = '%.2f'% (BidPrice_CE - (BidPrice_CE * lossPercentage_CALL ) / 100)
+                                    strikePrice_CE = nbpd['strikePrice']
+                                    # <------------------------------  ADD DATA TO DATABASE  ---------------------------------->
+                                    obj_banknifty_old = stock_detail.objects.create(status="BUY",buy_price = BidPrice_CE, base_strike_price=strikePrice_CE, live_Strike_price=livePrice, live_brid_price=BidPrice_CE, sell_price= sellPrice_CE ,stop_loseprice=stop_loss_CE, percentage_id=OptionId_CALL , call_put =call_call, buy_pcr = '%.2f'% (pcr) )
+                                    postData = { "buy_price": BidPrice_CE, "base_strike_price":strikePrice_CE, "live_Strike_price":livePrice, "sell_price": sellPrice_CE, "stop_loseprice": stop_loss_CE, 'percentage': OptionId_CALL, 'call_put':call_call}
+                                    # if is_live_banknifty == True:
+                                    #     sellFunOption(strikePrice_CE, BidPrice_CE, squareoff_CE, stoploss_CE, OptionId_CALL, lot_size_CALL, obj_banknifty_old.id, exprityDate)
+                                    print('SuccessFully Buy IN BANKNIFTY CALL: ',postData)                     
                  
                  
                             
@@ -311,7 +364,7 @@ def BANKNIFTY():
                                         ## ADD DATA TO DATABASE 
                                         stock_detail.objects.create(status="BUY",buy_price = BidPrice_PUT,live_brid_price=BidPrice_PUT , base_strike_price=strikePrice_PUT, live_Strike_price=livePrice, sell_price= sellPrice_PUT ,stop_loseprice=stop_loss_PUT, percentage_id=OptionId_PUT , call_put = "PUT", buy_pcr = '%.2f'% (pcr) )
                                         ## LIVE BUY
-                                        if live_call == True:
+                                        if is_live_banknifty == True:
                                             sellFunOption(strikePrice_PUT, BidPrice_PUT, squareoff_PUT, stoploss_PUT, OptionId_PUT, lot_size_PUT)
                                         print('SuccessFully Buy IN BANKNIFTY PUT: ',postData)
 
@@ -349,7 +402,7 @@ def BANKNIFTY():
                                 pcr_StopLoss_CALL = pcr - 0.02
                                 strikePrice_PCR_CALL = mx['strikePrice']
                                 postData_PCR_CALL = { "buy_price": BidPrice_PCR_CALL,'PCR' : pcr, "base_strike_price":strikePrice_PCR_CALL, "live_Strike_price":livePrice, "sell_price": sellPrice_PCR_CALL, "stop_loseprice": stop_loss_PCR_CALL, 'percentage': OptionId_PCR_CALL, 'call_put' : 'CALL'}
-                                if live_call == True:
+                                if is_live_banknifty == True:
                                     sellFunOption(strikePrice_PCR_CALL, BidPrice_PCR_CALL, sellPrice_PCR_CALL, stop_loss_PCR_CALL, OptionId_PCR_CALL, lot_size_pcr_call)
                                 print('SuccessFully Buy in BANKNIFTY CALL at PCR =========> : ', postData_PCR_CALL)
                                 pcr_option.objects.filter(id=PcrObj_Call_ID).update(LivePcr = '%.2f'% (pcr))
@@ -377,7 +430,7 @@ def BANKNIFTY():
                                 pcr_StopLoss_PUT = pcr + 0.02
                                 strikePrice_PCR_PUT = mx['strikePrice']
                                 postData_PCR_PUT = { "buy_price": BidPrice_PCR_PUT, 'PCR' : pcr, "base_strike_price": strikePrice_PCR_PUT, "live_Strike_price":livePrice, "sell_price": sellPrice_PCR_PUT, "stop_loseprice": stop_loss_PCR_PUT, 'percentage': OptionId_PCR_PUT, 'call_put' : 'PUT'}
-                                if live_call == True:
+                                if is_live_banknifty == True:
                                     sellFunOption(strikePrice_PCR_PUT, BidPrice_PCR_PUT, sellPrice_PCR_PUT, stop_loss_PCR_PUT, OptionId_PCR_PUT, lot_size_pcr_put)
                                 print('SuccessFully Buy in BANKNIFTY PUT at PCR =========> : ', postData_PCR_PUT)
                                 pcr_option.objects.filter(id=PcrObj_Put_ID).update(LivePcr = '%.2f'% (pcr))
@@ -511,9 +564,9 @@ def BANKNIFTY():
                                 stock_detail.objects.filter(id=stock_ID_PCR_PE).update(status = 'SELL', exit_price = liveBidPrice_PCR_PE, sell_buy_time=sell_time_PCR_PE, final_status = final_status_admin_PCR_PE, admin_call = True, exit_pcr= '%.2f'% (pcr))
             pcr_option.objects.filter(id=PcrObj_Put_ID).update(LivePcr = '%.2f'% (pcr))
 
-        except Exception as e:
-            file.write(str(e) + "\n")
-            consoleRed.print('Error BankNifty -->', e)
-            consoleRed.print("Connection refused by the server............................................. BANKNIFTY")
+        # except Exception as e:
+        #     file.write(str(e) + "\n")
+        #     consoleRed.print('Error BankNifty -->', e)
+        #     consoleRed.print("Connection refused by the server............................................. BANKNIFTY")
 
-        file.close()
+            file.close()
