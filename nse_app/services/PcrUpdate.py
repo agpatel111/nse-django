@@ -142,7 +142,7 @@ def PcrUpdateFun():
                 pe = False
 
             payload = {'name': stock, 'pcr': pcr, 'PE_CE_diffrent': pe_ce_Diff, 'CE': pe_ce_Diff, 'PE': pe}
-            r = requests.put(
+            requests.put(
                 "https://zerodha.harmistechnology.com/stockname", data=payload)
             success_count = success_count + 1
             # pcr_stock_name.objects.filter(name = stock).update(pcr =  pcr)

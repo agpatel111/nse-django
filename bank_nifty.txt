@@ -801,3 +801,216 @@ single positional indexer is out-of-bounds
 ------------------------------------------------> BANKNIFTY IN BUYZONE44650.044642.25
 ------------------------------------------------> BANKNIFTY IN BUYZONE44650.044616.15
 Expecting value: line 1 column 1 (char 0)
+cannot access free variable 'sell' where it is not associated with a value in enclosing scope
+tuple indices must be integers or slices, not str
+tuple indices must be integers or slices, not str
+tuple indices must be integers or slices, not str
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+Expecting value: line 1 column 1 (char 0)
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+Expecting value: line 1 column 1 (char 0)
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+Expecting value: line 1 column 1 (char 0)
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+Expecting value: line 1 column 1 (char 0)
+Expecting value: line 1 column 1 (char 0)
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+string indices must be integers, not 'str'
+Expecting value: line 1 column 1 (char 0)
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001C22CED5750>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001C22CF287D0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001C22E0A8490>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001C22C656A90>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001C22D842D50>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001C22E06E6D0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001C22F72EFD0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001C22F6D1B90>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001C22BE7E3D0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001C2312B3410>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001C2393EB9D0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001C2390B3490>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001C22D6AA910>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001C238FCAD10>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001C22F7302D0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001C22CAABA50>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001C22CB79C50>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001C22E10D890>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001C231979B90>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001C233B0B210>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001C23917E010>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001C22C187C50>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001C225BF7FD0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001C224488790>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001C2330A2F50>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001C22BE6BE90>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001C22F747350>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001C22F7B9490>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002BAAC865210>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002BAAC858950>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002BAAC6DDD10>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002B3432EA150>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002B3432D8090>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002B343470F10>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002B343225910>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002B3433C8690>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002B34330CE50>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002B34343DA50>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002B3433F0DD0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002B342F44450>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002B342B8A910>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002B3432D1590>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002B343352B50>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002B3431B2E10>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002B343226410>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002B342D45490>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002B3431B0FD0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002B3431974D0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002B34334A810>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002B343473650>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002B3437608D0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002CC9CA6BC90>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002CC9CA89210>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002CC9CEB46D0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002CC9CBD2150>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002CC9CEDC790>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+HTTPConnectionPool(host='192.168.1.235', port=8000): Max retries exceeded with url: /settings (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002CC9C938250>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))
+Expecting value: line 1 column 1 (char 0)
+Expecting value: line 1 column 1 (char 0)
+Expecting value: line 1 column 1 (char 0)
+'records'
+'records'
+'records'
+Expecting value: line 1 column 1 (char 0)
+'records'
+Expecting value: line 1 column 1 (char 0)
+Expecting value: line 1 column 1 (char 0)
+Expecting value: line 1 column 1 (char 0)
+Expecting value: line 1 column 1 (char 0)
+Expecting value: line 1 column 1 (char 0)
+Expecting value: line 1 column 1 (char 0)
+Expecting value: line 1 column 1 (char 0)
+Expecting value: line 1 column 1 (char 0)
+Expecting value: line 1 column 1 (char 0)
+Expecting value: line 1 column 1 (char 0)
+Expecting value: line 1 column 1 (char 0)
+Expecting value: line 1 column 1 (char 0)
+Expecting value: line 1 column 1 (char 0)
+Expecting value: line 1 column 1 (char 0)
+Expecting value: line 1 column 1 (char 0)
+Expecting value: line 1 column 1 (char 0)
+Expecting value: line 1 column 1 (char 0)
+Expecting value: line 1 column 1 (char 0)

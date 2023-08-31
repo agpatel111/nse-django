@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "rest_framework.authtoken",
     "debug_toolbar",
+    'knox',
 
    
     
@@ -66,18 +67,21 @@ INTERNAL_IPS = [
     "192.168.1.235",
 ]
 
-# REST_FRAMEWORK = {
-#     "DEFAULT_AUTHENTICATION_CLASSES": (
-#         # "rest_framework_simplejwt.authentication.JWTAuthentication",
-#         "knox.auth.TokenAuthentication",
-#     )
-# }
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
+        'knox.auth.TokenAuthentication',
     ]
 }
+
+REST_KNOX = {
+       'TOKEN_TTL': None,  # never expire
+}
+# REST_FRAMEWORK = {
+#     'DEFAULT_AUTHENTICATION_CLASSES': [
+#         'rest_framework.authentication.BasicAuthentication',
+#         'rest_framework.authentication.SessionAuthentication',
+#     ]
+# }
 
 CORS_ORIGIN_ALLOW_ALL = True
 

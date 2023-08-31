@@ -118,13 +118,18 @@ def pcrUpdate(request):
 class buyFutureOp(APIView):
     def post(self, request):
         try:
-            if request.method == 'POST':
-                option = request.data['OPTION']
-                lots = request.data['lots']
-                orderId = SellFunction.optionFuture(option, lots)
-                print(orderId)
-                return JsonResponse({'orderId': orderId})
-            return JsonResponse('get method not allowed', safe=False)
+            option = request.data['OPTION']
+            lots = request.data['lots']
+            profit = request.data['profit']
+            loss = request.data['loss']
+            obj = SellFunction.optionFuture(option, lots)
+            squareoff = obj['ltp'] + profit
+            stoploss = obj['ltp'] - loss
+            if option == 'BANKNIFTY': optionId = 14
+            if option == 'NIFTY': optionId = 15
+            stock_detail.objects.create(status="BUY", buy_price=obj['ltp'], sell_price = squareoff, stop_loseprice = stoploss, order_id = obj['orderId'], percentage_id=optionId  )
+            
+            return JsonResponse({'orderId': obj['orderId']})
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
@@ -151,7 +156,32 @@ class stock_details(APIView):
         # # demo = stock_detail.objects.values_list().values()
         # serializer = stockListSerializer(paginated_queryset, many=True)
         # return self.pagination_class.get_paginated_response(serializer.data)
+    def put(self, request):
+        try:
+            data = request.data
+            if not data.get("id"):
+                return Response({"status": False, "message": "id is required", "data": {}})
 
+            obj = stock_detail.objects.get(id=data.get("id"))
+            serializer = stockPostSerializer(obj, data=data, partial=True)
+            if ('exit_price' in data):
+                data["status"] = "SELL"
+                data["sell_buy_time"] = datetime.today()
+            if serializer.is_valid():
+                serializer.save()
+                return Response({
+                        "status": True,
+                        "message": "Successfully SELL Stock",
+                        "data": serializer.data,
+                    })
+            else:
+                return Response({
+                        "status": False,
+                        "message": "invalid data",
+                        "data": serializer.errors,
+                    })
+        except Exception as e:
+            return Response({"status": False, "message": "Invalid id", "data": {}})    
 
 
 class liveStocks(APIView):
@@ -159,7 +189,7 @@ class liveStocks(APIView):
     # authentication_classes = [TokenAuthentication]
 
     def get(self, request):
-        queryset = stock_detail.objects.filter(status = 'BUY', final_status='NA').order_by("-buy_time")
+        queryset = stock_detail.objects.filter(status = 'BUY').order_by("-buy_time")
         paginator = MyPaginationClass()
         paginated_queryset = paginator.paginate_queryset(queryset, request)
         serializer = stockListSerializer(paginated_queryset, many=True)

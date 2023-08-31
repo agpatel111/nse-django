@@ -1,7 +1,7 @@
 import pandas as pd
 import pyotp
 from SmartApi import SmartConnect
-from datetime import date
+from datetime import date, datetime
 import requests
 from nse_app.models import *
 
@@ -281,16 +281,47 @@ def sellFunStock(strikePrice, BidPrice, squareoff, stoploss, OptionId, lots, sto
         print("stock pe", ce_strike_symbol)   
 
 
+def getApiData():
+    def has_data_been_stored_today(file_path):
+        try:
+            with open(file_path, 'r') as file:
+                data = file.read()
+                if data:
+                    stored_date = pd.to_datetime(data.split('\n')[0])
+                    return stored_date.date() == date.today()
+        except FileNotFoundError:
+            pass
+        return False
+
+    url = 'https://margincalculator.angelbroking.com/OpenAPI_File/files/OpenAPIScripMaster.json'
+    file_path = 'data_file.json'
+
+    if not has_data_been_stored_today(file_path):
+        d = requests.get(url).json()
+        token_df = pd.DataFrame.from_dict(d)
+        token_df['expiry'] = pd.to_datetime(token_df['expiry'])
+        token_df = token_df.astype({'strike': float})
+
+        with open(file_path, 'w') as file:
+            file.write(f"{datetime.now()}\n")
+            token_df.to_json(file)
+
+    with open(file_path, 'r') as file:
+        lines = file.readlines()[1:]
+        data_json = ''.join(lines)
+        df = pd.read_json(data_json)
+        return df
 
 def getTokenInfoFuture(symbol, exch_seg='NSE', instrumenttype='OPTIDX', strike_price='', pe_ce='CE', expiry_day=None):
 
-    url = 'https://margincalculator.angelbroking.com/OpenAPI_File/files/OpenAPIScripMaster.json'
-    d = requests.get(url).json()
-    token_df = pd.DataFrame.from_dict(d)
-    token_df['expiry'] = pd.to_datetime(token_df['expiry'])
-    token_df = token_df.astype({'strike': float})
+    # url = 'https://margincalculator.angelbroking.com/OpenAPI_File/files/OpenAPIScripMaster.json'
+    # d = requests.get(url).json()
+    # token_df = pd.DataFrame.from_dict(d)
+    # token_df['expiry'] = pd.to_datetime(token_df['expiry'])
+    # token_df = token_df.astype({'strike': float})
+    # df = token_df
 
-    df = token_df
+    df = getApiData()
     strike_price = strike_price*100
 
     ## OPTION FUTURE
@@ -312,10 +343,12 @@ def optionFuture(option, lots):
     obj.generateSession(username, pwd, totp)
 
     ltp = obj.ltpData('NFO', symbol, token)
-    
+    ltp = ltp['data']['ltp']
+    # print(profit, loss, type(profit), type(loss), type(ltp))
+    # squareoff = ltp + profit
+    # stoploss = ltp - loss
     def place_order(token, symbol, qty, exch_seg, buy_sell, ordertype, price):
         qty = int(qty) * lots
-        # qty = int(qty) * 20
         qty = str(qty)
         try:
             orderparams = {
@@ -328,17 +361,33 @@ def optionFuture(option, lots):
                 "producttype": 'CARRYFORWARD',
                 "duration": "DAY",
                 "price": price,
-                "squareoff": "0",
-                "stoploss": "0",
+                "squareoff": '0',
+                "stoploss": '0',
                 "quantity": qty,
             }
-            print(ltp)
-            return ltp['data']['ltp']
+            print('ltp',ltp)
+            return {'orderId': ltp, 'ltp':ltp}
             # orderId = obj.placeOrder(orderparams)
-            # print(orderId)
+            # return orderId
             
         except Exception as e:
             print(
                 "Order placement failed: {}".format(e.message))
     
     return place_order(token, symbol, lot, 'NFO', 'BUY', 'MARKET', 0)
+
+
+def futureLivePrice(option):
+    f_token = getTokenInfoFuture(option ,'NFO', 'FUTIDX', '', '').iloc[0]
+    symbol = f_token['symbol']
+    token = f_token['token']
+
+    username = 'H117838'
+    apikey = 'SqtdCpAg'
+    pwd = '4689'
+    totp = pyotp.TOTP('K7QDKSEXWD7KRO7EVQCUHTFK2U').now()
+    obj = SmartConnect(api_key=apikey)
+    obj.generateSession(username, pwd, totp)
+
+    ltp = obj.ltpData('NFO', symbol, token)
+    return ltp['data']['ltp']

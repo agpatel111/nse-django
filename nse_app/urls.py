@@ -32,7 +32,7 @@ urlpatterns = [
     
     ## GET NSEDATA
     path('api/stockData', views.stockData, name = 'apistock'),
-    path('getStock/<slug:slug>', views.getStock, name = 'getStock'),
+    path('api/getStock/<slug:slug>', views.getStock, name = 'getStock'),
 
     
     path('logout', views.Logout.as_view(), name="logout"),
