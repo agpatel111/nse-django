@@ -57,9 +57,9 @@
           <li>
             <a href="{% url 'nse_app:settings' %}" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Settings</a>
           </li>
-          <li>
+          <!-- <li>
             <a href="{% url 'nse_app:pcrUpdate' %}" class="block py-2 pl-3 pr-4 text-gray-900 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent">Update Pcr</a>
-          </li>
+          </li> -->
         </ul>
       </div>
     </div>
@@ -104,6 +104,7 @@
         <tbody>
             {% for i in data %}
             <tr
+            data-row-id="{{i.id}}"
             {% if i.status == 'BUY' %}
               style="background-color: #9999ff;"
             {% endif %}
@@ -177,11 +178,11 @@
                 </td>
                 {% elif i.percentage_id == 14 %}
                 <td class="px-6 py-4">
-                    BANKNIFTY FUTURE
+                    BANKNIFTY FUTURE {{ i.type }}
                 </td>
                 {% elif i.percentage_id == 15 %}
                 <td class="px-6 py-4">
-                    NIFTY FUTURE
+                    NIFTY FUTURE {{ i.type }}
                 </td>
                 {% else %}
                 <td>
@@ -192,9 +193,9 @@
                   {% endif %}
                 <td class="px-6 py-4">
                     {% if i.final_status == 'PROFIT' %}
-                    <span class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">{{ i.final_status }}</span>
+                    <span class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">{{ i.final_status }}({{ i.PL }})</span>
                     {% else %}
-                    <span class="bg-red-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300">{{ i.final_status }}</span>
+                    <span class="bg-red-100 text-red-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300">{{ i.final_status }}({{ i.PL }})</span>
                     {% endif %}
                 </td>
 
@@ -202,15 +203,16 @@
                     <a href="#" onclick="toggleDropdown(event, '{{ i.id }}')" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Details</a>
                 </td>
             </tr>
-            <tr id="{{ i.id }}" class="hidden bg-gray-200">
+            <tr data-detailrow-id="{{i.id}}" id="{{ i.id }}" class="hidden bg-gray-200">
                 <td></td>
                 <td colspan="9" class="px-4 py-2">
                   <span>Live Strike: {{ i.live_Strike_price }} |</span>&nbsp;
                   <span>Entry PCR: {{ i.buy_pcr }} |</span>&nbsp;
                   <span>Exit PCR: {{ i.exit_pcr }} |</span>&nbsp;
                   <span>Sell Time: {{ i.sell_buy_time }} |</span>&nbsp;
-                  <span>Status: {{ i.status }} </span>&nbsp;&nbsp;
-                  <a href="{% url 'nse_app:deletestock' i.id %}" class="font-medium text-red-600 dark:text-blue-500 hover:underline">Delete</a>
+                  <span>Status: {{ i.status }} |</span>&nbsp;&nbsp;
+                  <span>Order Id: {% if i.order_id %} {{ i.order_id }} {% else %} - {% endif %} </span>&nbsp;&nbsp;
+                  <a href="#" data-sid='{{i.id}}' class="btn-del font-medium text-red-600 dark:text-blue-500 hover:underline">Delete</a>
                 </td>
             {% endfor %}
 
@@ -240,12 +242,37 @@
   
 
 
+  <script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" crossorigin="anonymous"></script>
 <script>
+
     function toggleDropdown(event, id) {
         event.preventDefault();
         var element = document.getElementById(id);
         element.classList.toggle("hidden");
       }
+
+  $("tbody").on("click", ".btn-del", function () { 
+    event.preventDefault();
+
+    let id = $(this).attr("data-sid");
+    const csrfToken = "{{ csrf_token }}";
+    data = { id: id }
+    mythis = this;
+    $.ajax({
+      url: "{% url 'nse_app:deletestock' %}",
+      method: "POST",
+      headers: {'X-CSRFToken': csrfToken},
+      data: data,
+      success: function (data) { 
+        if (data.status == 1) { 
+          const rowToRemove = document.querySelector(`[data-row-id="${id}"]`);
+          const rowRemove = document.querySelector(`[data-detailrow-id="${id}"]`);
+          rowToRemove.remove()
+          rowRemove.remove()
+        }
+      }
+})
+  })
       
 </script>
 

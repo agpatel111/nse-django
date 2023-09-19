@@ -70,11 +70,14 @@ INTERNAL_IPS = [
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'knox.auth.TokenAuthentication',
-    ]
+    ],
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    )
 }
 
 REST_KNOX = {
-       'TOKEN_TTL': None,  # never expire
+        'TOKEN_TTL': None,  # never expire
 }
 # REST_FRAMEWORK = {
 #     'DEFAULT_AUTHENTICATION_CLASSES': [

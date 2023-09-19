@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 Buy_status = (
     ('BUY', 'BUY'),
     ('SELL', 'SELL'),
-    ('empty', 'empty'),
+    ('NA', 'NA'),
     )
 
 final_status = (
@@ -65,16 +65,16 @@ class stock_detail(models.Model):
     exit_pcr = models.FloatField(blank=True, default = 0, null=True)
     buy_time = models.DateTimeField(auto_now_add= True)
     sell_buy_time = models.DateTimeField( null=True)
-    status = models.CharField(max_length=50, choices=Buy_status, default='empty', blank=True)
+    status = models.CharField(max_length=50, choices=Buy_status, default='NA', blank=True)
+    type = models.CharField(max_length=50, choices=Buy_status, default='NA', blank=True)
     final_status = models.CharField(max_length=50, choices=final_status, default='NA', blank=True )
     stock_name = models.CharField(max_length=50, default='NA', blank=True)
     admin_call = models.BooleanField(default=False)
     call_put = models.CharField(max_length=50, blank=True, choices=call_or_put)
     qty = models.IntegerField(blank=True, default=0)
     order_id = models.CharField(max_length=50, blank=True)
+    oi_diff = models.IntegerField(blank=True, null=True)
 
-    def __str__(self):
-        return self.percentage,'->', self.buy_price
 
     class Meta:
         db_table = 'stocks_details'

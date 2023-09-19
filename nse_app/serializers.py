@@ -11,11 +11,28 @@ class settingSerializer(serializers.ModelSerializer):
 
 class stockListSerializer(serializers.ModelSerializer):
     percentage = settingSerializer()
+    PL = serializers.SerializerMethodField()
+    
     class Meta:
         model = stock_detail
         fields = "__all__"
-        depth = 1
-        # exclude = ['sell_buy_time',]
+        # depth = 1
+    
+    def get_PL(self, obj):
+        option = obj.percentage.option.split()
+        if option[0] == 'BANKNIFTY' and obj.exit_price:
+            if option[1] == 'FUTURE' and obj.type == 'SELL':
+                return round((obj.buy_price - obj.exit_price) * 15, 2)
+            else:
+                return round((obj.exit_price - obj.buy_price) * 15, 2)
+            
+        elif option[0] == 'NIFTY' and obj.exit_price:
+            if option[1] == 'FUTURE' and obj.type == 'SELL':
+                return round((obj.buy_price - obj.exit_price) * 50, 2)
+            else:
+                return round((obj.exit_price - obj.buy_price) * 50, 2)
+        else:
+            return None
 
 class stockPostSerializer(serializers.ModelSerializer):
     # percentage = settingSerializer()
@@ -23,7 +40,6 @@ class stockPostSerializer(serializers.ModelSerializer):
         model = stock_detail
         fields = "__all__"
         # depth = 1
-        # exclude = ['sell_buy_time',]
 
 
 class putbankniftySerializer(serializers.ModelSerializer):

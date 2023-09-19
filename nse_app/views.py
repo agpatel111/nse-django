@@ -8,31 +8,56 @@ import datetime
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated 
 from rest_framework.authentication import TokenAuthentication
-import requests
-import json
 from datetime import datetime
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from nse_app.services import StockView, PcrUpdate
-from nse_app.Scheduler.CoustomFun import Coustom
 from django.core.paginator import Paginator
 from django.utils import timezone
 from rest_framework import generics
 from .pagination import MyPaginationClass
 from nse_app.Scheduler import SellFunction, BankNifty, NewBankNifty
-
+from nse_app.Scheduler.SellFunction import getTokenInfo, futureLivePrice, ltpData
 
 def home(request):
-    # BankNifty.BANKNIFTY()
-    # NewBankNifty.BANKNIFTY()
-    data = stock_detail.objects.all().order_by("-buy_time").values()
+    print(ltpData('TCS', float(3600), 'CE', date(2023, 9, 20)))
+    data = stock_detail.objects.select_related('percentage').all().order_by("-buy_time")
     paginator = Paginator(data, 25)
     page_number = request.GET.get('page')
     page = paginator.get_page(page_number)
 
-    today = date.today()
-        
+    today = timezone.now().date()
+    today = timezone.make_aware(timezone.datetime(today.year, today.month, today.day))
+
+    # profit_records = stock_detail.objects.select_related('percentage').filter(
+    #     buy_time__gte=today
+    # )
+    # total_profit = 0.0  
+    # for record in profit_records:
+    #     if record.final_status != 'NA':
+    #         option = record.percentage.option.split()[0]
+    #         if option == 'BANKNIFTY' and record.exit_price:
+    #             total_profit += (record.exit_price - record.buy_price) * 15
+    #         elif option == 'NIFTY' and record.exit_price:
+    #             total_profit += (record.exit_price - record.buy_price) * 50
+
+    for i in page.object_list:
+        option = i.percentage.option.split()
+        if option[0] == 'BANKNIFTY' and i.exit_price:
+            if option[1] == 'FUTURE' and i.type == 'SELL':
+                i.PL = '%.2f'% ((i.buy_price - i.exit_price) * 15)
+            else:
+                i.PL = '%.2f'% ((i.exit_price - i.buy_price) * 15)
+        elif option[0] == 'NIFTY' and i.exit_price:
+            if option[1] == 'FUTURE' and i.type == 'SELL':
+                i.PL = '%.2f'% ((i.buy_price - i.exit_price) * 50)
+            else:
+                i.PL = '%.2f'% ((i.exit_price - i.buy_price) * 50)
+        else:
+            i.PL = '-'
+
+    
     pagination_info = {
     'page': page,
     'paginator': paginator,
@@ -40,16 +65,19 @@ def home(request):
     return render(request, "tailwind/Home.html", {"data": page.object_list, 'pagination_info': pagination_info, 'today': today})
 
 
-def deleteStock(request, id):
-    stock =  stock_detail.objects.get(id = id)
-    stock.delete()
-    return redirect("nse_app:home")
-
+def deleteStock(request):
+    if request.method == "POST":
+        id = request.POST.get('id')
+        stock =  stock_detail.objects.get(id = id)
+        stock.delete()
+        return JsonResponse({'status' : 1})
+    else:
+        return JsonResponse({'status' : 0})
 
 def PcrValue(request):
     today = date.today()
     today = timezone.make_aware(timezone.datetime(today.year, today.month, today.day))
-    data = pcr_values.objects.filter().order_by("-timestamp")
+    data = pcr_values.objects.filter(timestamp__gte = today).order_by("-timestamp")
 
     return render(request, 'tailwind/PcrValues.html', {'data': data})
 
@@ -96,13 +124,13 @@ def stockData(request):
         return Response({ 'status' : False, 'message': 'Something is wrong' })
 
 @api_view(['GET'])
-def getStock(request, slug):
-    name = slug
+def getStock(request, stockname):
+    name = stockname
     try:     
         # {% Call custom Fun to Fetch Data %}
         data = StockView.StockviewFun(name)
         data = [ data ]
-               
+
         return JsonResponse({ 'status' : True, 'data': data })
     except Exception as e:
         print('stock->', name, e)
@@ -119,15 +147,15 @@ class buyFutureOp(APIView):
     def post(self, request):
         try:
             option = request.data['OPTION']
+            type = request.data['type']
             lots = request.data['lots']
             profit = request.data['profit']
             loss = request.data['loss']
-            obj = SellFunction.optionFuture(option, lots)
-            squareoff = obj['ltp'] + profit
-            stoploss = obj['ltp'] - loss
-            if option == 'BANKNIFTY': optionId = 14
-            if option == 'NIFTY': optionId = 15
-            stock_detail.objects.create(status="BUY", buy_price=obj['ltp'], sell_price = squareoff, stop_loseprice = stoploss, order_id = obj['orderId'], percentage_id=optionId  )
+            if option == 'BANKNIFTY': optionId = nse_setting.objects.filter(option = "BANKNIFTY FUTURE").values().first()
+            if option == 'NIFTY': optionId = nse_setting.objects.filter(option = "NIFTY FUTURE").values().first()
+            obj = SellFunction.optionFuture(option, lots, profit, loss, type)
+
+            stock_detail.objects.create(status="BUY", type= type , buy_price=obj['ltp'], sell_price = obj['squareoff'], stop_loseprice = obj['stoploss'], order_id = obj['orderId'], percentage_id=optionId['id'])
             
             return JsonResponse({'orderId': obj['orderId']})
         except Exception as e:
@@ -145,17 +173,29 @@ class stock_details(APIView):
     # permission_classes = [IsAuthenticated]              
     # authentication_classes = [TokenAuthentication]
     def get(self, request):
-        queryset = stock_detail.objects.all().order_by("-buy_time")
+        
+        start_date = request.GET.get('start_date')
+        end_date = request.GET.get('end_date')
+        try:
+            if start_date and end_date:
+                start_date = timezone.make_aware(datetime.strptime(start_date, '%Y-%m-%d'))
+                end_date = timezone.make_aware(datetime.strptime(end_date, '%Y-%m-%d') + timedelta(days=1)) - timedelta(seconds=1)
+
+                queryset = stock_detail.objects.select_related('percentage').filter(buy_time__gte = start_date, buy_time__lte=end_date).order_by("-buy_time")
+                total_PL = sum(stockListSerializer().get_PL(record) or 0 for record in queryset)
+            else:
+                queryset = stock_detail.objects.select_related('percentage').all().order_by("-buy_time")
+                total_PL = 0
+        except ValueError:
+            return Response({'error': 'Invalid date format'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # queryset = stock_detail.objects.select_related('percentage').all().order_by("-buy_time")
         paginator = MyPaginationClass()
         paginated_queryset = paginator.paginate_queryset(queryset, request)
         serializer = stockListSerializer(paginated_queryset, many=True)
-        return paginator.get_paginated_response(serializer.data)
-        
-        
-        # paginated_queryset = self.pagination_class.paginate_queryset(self, nse_objs, request, view=self)
-        # # demo = stock_detail.objects.values_list().values()
-        # serializer = stockListSerializer(paginated_queryset, many=True)
-        # return self.pagination_class.get_paginated_response(serializer.data)
+        return paginator.get_paginated_response({'total_PL': total_PL,'data': serializer.data})
+
+
     def put(self, request):
         try:
             data = request.data
@@ -387,7 +427,7 @@ def delete_stock(request, pk):
 
 @api_view(['GET'])
 def get_nse_data(self , request , pk):
-       if request.method == 'GET':
+    if request.method == 'GET':
         snippets = nse_setting.objects.get(id = pk)
         serializer = settingSerializer(snippets, many=True)
         return Response(serializer.data)
@@ -488,18 +528,3 @@ class PcrStockName(APIView):
         except Exception as e:
             print(e)
             return Response({"status": False, "msg": "Invalid StockName", "data": {}})
-
-
-import requests
-import requests
-import json
-
-
-def print_hello(request):
-    url = 'https://www.nseindia.com/api/option-chain-indices?symbol=NIFTY'
-    headers = {'user-agent': 'my-app/0.0.1'}
-    response = requests.get(url, headers=headers)
-    data = response.json()
-    timestamp = data['records']
-    # print(data)
-    return JsonResponse({"timestamp": timestamp })

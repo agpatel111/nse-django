@@ -82,6 +82,16 @@ class Coustom():
         
         return setBuyCondition
     
+    def buyConditionFuture(stock_details, OptionId, type):
+        for i in stock_details:
+            if i['percentage_id'] == OptionId and i['status'] == 'BUY' and i['type'] == type :
+                setBuyCondition = False
+                break
+            else:
+                setBuyCondition = True
+        
+        return setBuyCondition
+    
     def buyCondition_withOneStock(stock_details, OptionId, call_put, option):
         profit = 0
         loss = 0
