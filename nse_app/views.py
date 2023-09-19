@@ -18,10 +18,11 @@ from django.utils import timezone
 from rest_framework import generics
 from .pagination import MyPaginationClass
 from nse_app.Scheduler import SellFunction, BankNifty, NewBankNifty
-from nse_app.Scheduler.SellFunction import getTokenInfo, futureLivePrice, ltpData
+from nse_app.Scheduler.SellFunction import getTokenInfo, futureLivePrice, ltpData, angleDetails
 
 def home(request):
-    print(ltpData('TCS', float(3600), 'CE', date(2023, 9, 20)))
+    # print(ltpData('BANKNIFTY', 45000, 'CE', date(2023, 9, 20)))
+    # print(angleDetails())
     data = stock_detail.objects.select_related('percentage').all().order_by("-buy_time")
     paginator = Paginator(data, 25)
     page_number = request.GET.get('page')

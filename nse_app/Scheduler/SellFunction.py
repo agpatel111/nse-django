@@ -6,6 +6,18 @@ from datetime import date, datetime
 import requests
 from nse_app.models import *
 
+def angleDetails():
+    data = {
+        'username': 'H117838',
+        'apikey': 'SqtdCpAg',
+        'password': '4689',
+        't_otp': 'K7QDKSEXWD7KRO7EVQCUHTFK2U'
+    }
+    # url = 'http://zerodha.harmistechnology.com/accountDetail'
+    # response = requests.get(url).json()
+    # data = response[0]
+    return data['username'], data['apikey'], data['password'], data['t_otp']
+
 
 def getTokenApiData():
     def fetch_and_store_data():
@@ -47,8 +59,7 @@ def getTokenInfo(symbol, exch_seg='NSE', instrumenttype='OPTIDX', strike_price='
 
     ## OPTION STRIKE PRICE
     elif exch_seg == 'NFO' and (instrumenttype == 'OPTSTK' or instrumenttype == 'OPTIDX'):
-        print(df[df['name'] == symbol] & df['instrumenttype'] == instrumenttype)
-        return df[(df['exch_seg'] == 'NFO') & (df['instrumenttype'] == instrumenttype) & (df['name'] == symbol) & (df['strike'] == strike_price) & (df['symbol'].str.endswith(pe_ce))].sort_values(by=['expiry'])
+        return df[(df['exch_seg'] == 'NFO') & (df['name'] == symbol) & (df['strike'] == strike_price) & (df['symbol'].str.endswith(pe_ce))].sort_values(by=['expiry'])
 
     ## OPTION FUTURE
     elif exch_seg == 'NFO' and ((instrumenttype == 'FUTSTK') or (instrumenttype == 'FUTIDX')):
@@ -193,11 +204,13 @@ def sellFunStock(strikePrice, BidPrice, squareoff, stoploss, OptionId, lots, sto
     stoploss_sm = stoploss
     percentions_sm = OptionId
     lot_size = lots
+    
+    username, apikey, password, t_otp = angleDetails()
 
-    username = 'H117838'
-    apikey = 'SqtdCpAg'
-    pwd = '4689'
-    totp = pyotp.TOTP("K7QDKSEXWD7KRO7EVQCUHTFK2U").now()
+    username = username
+    apikey = apikey
+    pwd = password
+    totp = pyotp.TOTP(t_otp).now()
     obj = SmartConnect(api_key=apikey)
     dataa = obj.generateSession(username, pwd, totp)
 
@@ -300,10 +313,12 @@ def optionFuture(option, lots, profit, loss, buy_sell='BUY'):
     token = f_token['token']
     lot = f_token['lotsize']
 
-    username = 'H117838'
-    apikey = 'SqtdCpAg'
-    pwd = '4689'
-    totp = pyotp.TOTP('K7QDKSEXWD7KRO7EVQCUHTFK2U').now()
+    username, apikey, password, t_otp = angleDetails()
+
+    username = username
+    apikey = apikey
+    pwd = password
+    totp = pyotp.TOTP(t_otp).now()
     obj = SmartConnect(api_key=apikey)
     obj.generateSession(username, pwd, totp)
 
@@ -356,10 +371,12 @@ def futureLivePrice(option):
     symbol = f_token['symbol']
     token = f_token['token']
 
-    username = 'H117838'
-    apikey = 'SqtdCpAg'
-    pwd = '4689'
-    totp = pyotp.TOTP('K7QDKSEXWD7KRO7EVQCUHTFK2U').now()
+    username, apikey, password, t_otp = angleDetails()
+
+    username = username
+    apikey = apikey
+    pwd = password
+    totp = pyotp.TOTP(t_otp).now()
     obj = SmartConnect(api_key=apikey)
     obj.generateSession(username, pwd, totp)
 
@@ -371,18 +388,20 @@ def ltpData(option_name, strikePrice, pe_ce, a):
     '''
     live price of option strike price
     '''
-    token_info = getTokenInfo(option_name, 'NFO', 'OPTIDX', strikePrice, pe_ce, a)
+    token_info = getTokenInfo(option_name, 'NFO', 'OPTIDX', strikePrice, pe_ce, a).iloc[0]
     symbol = token_info['symbol']
     token = token_info['token']
     lot = token_info['lotsize']
-    print(token_info)
-    # username = 'H117838'
-    # apikey = 'SqtdCpAg'
-    # pwd = '4689'
-    # totp = pyotp.TOTP("K7QDKSEXWD7KRO7EVQCUHTFK2U").now()
-    # smartapi = SmartConnect(api_key=apikey)
-    # smartapi.generateSession(username, pwd, totp)
+    
+    username, apikey, password, t_otp = angleDetails()
+    
+    username = username
+    apikey = apikey
+    pwd = password
+    totp = pyotp.TOTP(t_otp).now()
+    smartapi = SmartConnect(api_key=apikey)
+    smartapi.generateSession(username, pwd, totp)
 
-    # ltp = smartapi.ltpData('NFO', symbol, token )
-    # ltp = ltp['data']['ltp']
-    # return ltp
+    ltp = smartapi.ltpData('NFO', symbol, token )
+    ltp = ltp['data']['ltp']
+    return ltp
