@@ -16,6 +16,7 @@ urlpatterns = [
     path('pcrUpdate/', views.pcrUpdate, name = 'pcrUpdate'),
 
     path('buyFutureOp', views.buyFutureOp.as_view(), name = 'buyFutureOp'),
+    path('buyStockFuture', views.buyStockFuture.as_view(), name = 'buyStockFuture'),
     
     path('stocks', views.stock_details.as_view(), name = 'stock_detail'),
     path('liveStocks', views.liveStocks.as_view(), name = 'liveStocks'), 

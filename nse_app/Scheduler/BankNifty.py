@@ -85,7 +85,7 @@ def BankniftyApiFun():
     '''find put strike price for buy'''
     base_Price_up = []
     Total_oi_up_arr = []
-    for upSlice3 in up_price[0:3]:
+    for upSlice3 in up_price[0:5]:
         PE_oi_up = upSlice3['PE']['changeinOpenInterest'] + upSlice3['PE']['openInterest']
         CE_oi_up = upSlice3['CE']['changeinOpenInterest'] + upSlice3['CE']['openInterest']
         Total_oi_up = PE_oi_up - CE_oi_up

@@ -30,8 +30,8 @@ option_names = (
 class nse_setting(models.Model):
 
     option = models.CharField(max_length=50)
-    profit_percentage = models.IntegerField()
-    loss_percentage = models.IntegerField()
+    profit_percentage = models.FloatField()
+    loss_percentage = models.FloatField()
     set_pcr = models.FloatField()
     baseprice_plus = models.IntegerField()
     you_can_buy = models.BooleanField(null=True, blank=True)

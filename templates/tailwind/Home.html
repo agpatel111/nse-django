@@ -136,61 +136,17 @@
                 <td class="px-6 py-4">
                     {{ i.buy_time }}
                 </td>
-                {% if i.percentage_id == 1 %}
+
                 <td class="px-6 py-4">
-                    BANKNIFTY CE
-                </td>
-                {% elif i.percentage_id == 2 %}
-                <td class="px-6 py-4">
-                    NIFTY CE
-                </td>
-                {% elif i.percentage_id == 3 %}
-                <td class="px-6 py-4">
-                    BANKNIFTY PE
-                </td>
-                {% elif i.percentage_id == 4 %}
-                <td class="px-6 py-4">
-                    NIFTY PE
-                </td>
-                {% elif i.percentage_id == 6 %}
-                <td class="px-6 py-4">
-                    BANKNIFTY PCR CE
-                </td>
-                {% elif i.percentage_id == 9 %}
-                <td class="px-6 py-4">
-                    BANKNIFTY PCR PE
-                </td>
-                {% elif i.percentage_id == 8 %}
-                <td class="px-6 py-4">
-                    NIFTY PCR CE
-                </td>
-                {% elif i.percentage_id == 5 %}
-                <td class="px-6 py-4">
-                    {{ i.stock_name }} CE
-                </td>
-                {% elif i.percentage_id == 7 %}
-                <td class="px-6 py-4">
-                    {{ i.stock_name }} PE
-                </td>
-                {% elif i.percentage_id == 11 %}
-                <td class="px-6 py-4">
-                    {{ i.stock_name }} PCR CE
-                </td>
-                {% elif i.percentage_id == 14 %}
-                <td class="px-6 py-4">
-                    BANKNIFTY FUTURE {{ i.type }}
-                </td>
-                {% elif i.percentage_id == 15 %}
-                <td class="px-6 py-4">
-                    NIFTY FUTURE {{ i.type }}
-                </td>
-                {% else %}
-                <td>
-                    <p class="fw-normal mb-1">
-                      {{ i.percentage_id }}
-                    </p>
-                  </td>
+                  
+                  {% if i.percentage.option == 'STOCK FUTURE' %}
+                    {{i.stock_name}} FUTURE {{i.type}}
+                  {% else %}
+                    {{i.percentage}}
                   {% endif %}
+                    
+                </td>
+
                 <td class="px-6 py-4">
                     {% if i.final_status == 'PROFIT' %}
                     <span class="bg-green-100 text-green-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">{{ i.final_status }}({{ i.PL }})</span>
@@ -211,6 +167,7 @@
                   <span>Exit PCR: {{ i.exit_pcr }} |</span>&nbsp;
                   <span>Sell Time: {{ i.sell_buy_time }} |</span>&nbsp;
                   <span>Status: {{ i.status }} |</span>&nbsp;&nbsp;
+                  <span>Qty: {{ i.qty }} |</span>&nbsp;&nbsp;
                   <span>Order Id: {% if i.order_id %} {{ i.order_id }} {% else %} - {% endif %} </span>&nbsp;&nbsp;
                   <a href="#" data-sid='{{i.id}}' class="btn-del font-medium text-red-600 dark:text-blue-500 hover:underline">Delete</a>
                 </td>

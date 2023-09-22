@@ -383,6 +383,59 @@ def futureLivePrice(option):
     ltp = obj.ltpData('NFO', symbol, token)
     return ltp['data']['ltp']
 
+def futureStockLivePrice(stock):
+    '''
+    future live price of index
+    '''
+    f_token = getTokenInfo(stock ,'NFO', 'FUTSTK', '', '').iloc[0]
+    symbol = f_token['symbol']
+    token = f_token['token']
+
+    username, apikey, password, t_otp = angleDetails()
+
+    username = username
+    apikey = apikey
+    pwd = password
+    totp = pyotp.TOTP(t_otp).now()
+    obj = SmartConnect(api_key=apikey)
+    obj.generateSession(username, pwd, totp)
+
+    ltp = obj.ltpData('NFO', symbol, token)
+    return ltp['data']['ltp']
+
+
+def stockFutureBuyPrice(stock, lots, profit, loss, buy_sell='BUY'):
+    '''
+    stock Future live price of index
+    '''
+    f_token = getTokenInfo(stock ,'NFO', 'FUTSTK', '', '').iloc[0]
+    symbol = f_token['symbol']
+    token = f_token['token']
+    qty = f_token['lotsize']
+    username, apikey, password, t_otp = angleDetails()
+
+    username = username
+    apikey = apikey
+    pwd = password
+    totp = pyotp.TOTP(t_otp).now()
+    obj = SmartConnect(api_key=apikey)
+    obj.generateSession(username, pwd, totp)
+    ltp = obj.ltpData('NFO', symbol, token)
+    ltp = ltp['data']['ltp']
+    
+    profit = (ltp * profit) / 100
+    loss = (ltp * loss) / 100
+    
+    if buy_sell == 'BUY':
+        squareoff = ltp + profit
+        stoploss = ltp - loss
+    else:
+        squareoff = ltp - profit
+        stoploss = ltp + loss
+
+    orderId = 0
+    return ltp, round(squareoff, 2), round(stoploss, 2), orderId, qty*int(lots)
+
 
 def ltpData(option_name, strikePrice, pe_ce, a):
     '''

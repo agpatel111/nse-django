@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     "debug_toolbar",
     'knox',
 
-   
+    
     
 ]
 
@@ -64,7 +64,7 @@ MIDDLEWARE = [
 ]
 
 INTERNAL_IPS = [
-    "192.168.1.235",
+    "192.168.1.236",
 ]
 
 REST_FRAMEWORK = {

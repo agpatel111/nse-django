@@ -31,6 +31,11 @@ class stockListSerializer(serializers.ModelSerializer):
                 return round((obj.buy_price - obj.exit_price) * 50, 2)
             else:
                 return round((obj.exit_price - obj.buy_price) * 50, 2)
+        elif option[0] == 'STOCK' and obj.exit_price:
+            if option[1] == 'FUTURE' and obj.type == 'SELL':
+                return round((obj.buy_price - obj.exit_price) * obj.qty, 2)
+            else:
+                return round((obj.exit_price - obj.buy_price) * obj.qty, 2)
         else:
             return None
 

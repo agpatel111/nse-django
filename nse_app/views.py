@@ -18,11 +18,8 @@ from django.utils import timezone
 from rest_framework import generics
 from .pagination import MyPaginationClass
 from nse_app.Scheduler import SellFunction, BankNifty, NewBankNifty
-from nse_app.Scheduler.SellFunction import getTokenInfo, futureLivePrice, ltpData, angleDetails
 
 def home(request):
-    # print(ltpData('BANKNIFTY', 45000, 'CE', date(2023, 9, 20)))
-    # print(angleDetails())
     data = stock_detail.objects.select_related('percentage').all().order_by("-buy_time")
     paginator = Paginator(data, 25)
     page_number = request.GET.get('page')
@@ -55,6 +52,11 @@ def home(request):
                 i.PL = '%.2f'% ((i.buy_price - i.exit_price) * 50)
             else:
                 i.PL = '%.2f'% ((i.exit_price - i.buy_price) * 50)
+        elif option[0] == 'STOCK' and i.exit_price:
+            if option[1] == 'FUTURE' and i.type == 'SELL':
+                i.PL = '%.2f'% ((i.buy_price - i.exit_price) * i.qty)
+            else:
+                i.PL = '%.2f'% ((i.exit_price - i.buy_price) * i.qty)
         else:
             i.PL = '-'
 
@@ -114,11 +116,11 @@ def stockData(request):
         if request.data['name'] == '':
             return Response({ 'status': False, 'msg': 'name Required'}) 
         name = request.data['name']
-       
+        
         # {% Call custom Fun to Fetch Data %}
         data = StockView.StockviewFun(name)
         data = [ data ]
-               
+        
         return Response({ 'status' : True, 'data': data })
     except Exception as e:
         print('stock->', name, e)
@@ -161,6 +163,25 @@ class buyFutureOp(APIView):
             return JsonResponse({'orderId': obj['orderId']})
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class buyStockFuture(APIView):
+    def post(self, request):
+        try:
+            stock = request.data['STOCK']
+            type = request.data['type']
+            lots = request.data['lots']
+            profit = request.data['profit']
+            loss = request.data['loss']
+            obj = nse_setting.objects.filter(option = "STOCK FUTURE").values().first()
+
+            ltp, squareoff, stoploss, orderId, qty = SellFunction.stockFutureBuyPrice(stock, lots, profit, loss, type)
+            stock_detail.objects.create(status="BUY", type= type, stock_name = stock, qty = qty,  buy_price=ltp, sell_price = squareoff, stop_loseprice = stoploss, order_id = orderId, percentage_id=obj['id'])
+            
+            return JsonResponse({'orderId': ltp})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 class accountDetailsListCreateView(generics.ListCreateAPIView):
     queryset = AccountCredential.objects.all()
