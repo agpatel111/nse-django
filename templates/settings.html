@@ -1,211 +1,164 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'base.html' %}
 
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Font Awesome -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
-  <!-- MDB -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.1.0/mdb.min.css" rel="stylesheet" />
 
+{% block head %}
+  <title>Settings</title>    
   <script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" crossorigin="anonymous"></script>
-  <title>Settings</title>
-  <style>
-    body{
-      overflow-y: scroll; 
-    }
-  </style>
-</head>
+{% endblock head %}
 
-<body>
+{% block content %}
 
-  <nav class="navbar navbar-light bg-light">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#">Settings</a>
-      <div class="dropdown">
-      <i id="dropdownMenuButton"
-        type="button"
-        data-mdb-toggle="dropdown"
-        aria-expanded="false" 
-        class="fas fa-cog fa-lg dropdown-toggle" 
-        style="padding-right: 25px;">
-      </i>
-        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-          <li><a class="dropdown-item" href="{% url 'nse_app:home' %}">Home</a></li>
-          <li><a class="dropdown-item" href="{% url 'nse_app:pcrvalues' %}">Pcr Values</a></li>
-          <li><a class="dropdown-item" href="{% url 'nse_app:settings' %}">Settings</a></li>
-          <li><a class="dropdown-item" href="{% url 'nse_app:pcrUpdate' %}">Update Pcr</a></li>
-        </ul>
-    </div>
-    </div>
-  </nav>
-  <br>
+      <table class="table w-full border text-sm mt-8">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
+          <tr>
+            <th scope="col" class="px-6 py-4">Banknifty</th>
+            <th scope="col" class="px-6 py-4">Nifty</th>
+            <th scope="col" class="px-6 py-4">Stock Call</th>
+            <th scope="col" class="px-6 py-4">Stock Put</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for i in data %}
+            <tr class="bg-white border-b">
 
-  <table class="table table-sm">
-    <thead class="bg-light">
-      <tr>
-        <th>Banknifty</th>
-        <th>Nifty</th>
-        <th>Stock Call</th>
-        <th>Stock Put</th>
-      </tr>
-    </thead>
-    <tbody>
-        {% for i in data %}
-        <tr>
-            <td>
-                <button type="button" 
-                {% if i.live_banknifty %}
-                class="btn btn-success"
-                id="BankNiftyGreen"
-                {% else %}
-                class="btn btn-danger"
-                id="BankNiftyRed"
-                {% endif %}
-                     >BankNifty</button>
-            </td>
-            <td>
-                <button type="button"
-                {% if i.live_nifty %}
-                class="btn btn-success"
-                id="NiftyGreen"
-                {% else %}
-                class="btn btn-danger"
-                id="NiftyRed"
-                {% endif %} >Nifty</button>
-            </td>
-            <td>
-                <button type="button"
-                {% if i.live_stock_ce %}
-                class="btn btn-success"
-                id="StockCEGreen"
-                {% else %}
-                class="btn btn-danger"
-                id="StockCERed"
-                {% endif %} >Stock CAll</button>
-            </td>
-            <td>
-                <button type="button"
-                {% if i.live_stock_pe %}
-                class="btn btn-success"
-                id="StockPEGreen"
-                {% else %}
-                class="btn btn-danger"
-                id="StockPERed"
-                {% endif %} >Stock PUT</button>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-  </table>
+                <td class="px-6 py-4 text-center">
+                    <button type="button"
+                    value="{{ i.live_banknifty }}"
+                    onclick="BankNifty(this.value)"
+                    id="banknifty"
+                    class="{% if i.live_banknifty %} 
+                            focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800
+                            {% else %}
+                            focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900
+                            {% endif %}">
+                            BankNifty
+                    </button>
+                </td>
 
-  <script>
-    $("#BankNiftyGreen").click(function() {
-        data = { name: 'BankNifty', live: 'True' }
-        $.ajax({
-            url: "{% url 'nse_app:changesettings' %}",
-            method: "POST",
-            data: data,
-            success: function(data){ 
-                location.reload()
-            }
-        })
-    })
+                <td class="px-6 py-4 text-center">
+                    <button type="button"
+                    value="{{ i.live_nifty }}"
+                    onclick="Nifty(this.value)"
+                    id="nifty"
+                    class="{% if i.live_nifty %} 
+                            focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800
+                            {% else %}
+                            focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900
+                            {% endif %}">
+                            Nifty
+                    </button>
+                </td>
 
-    $("#BankNiftyRed").click(function() {
-        data = { name: 'BankNifty', live: 'False' }
-        $.ajax({
-            url: "{% url 'nse_app:changesettings' %}",
-            method: "POST",
-            data: data,
-            success:
-            function(data){ 
-                location.reload()
-            }
-        })
-    })
-    
-    $("#NiftyGreen").click(function() {
-        data = { name: 'Nifty', live: 'True' }
-        $.ajax({
-            url: "{% url 'nse_app:changesettings' %}",
-            method: "POST",
-            data: data,
-            success:
-            function(data){ 
-                location.reload()
-            }
-        })
-    })
+                <td class="px-6 py-4 text-center">
+                    <button type="button"
+                    value="{{ i.live_stock_ce }}"
+                    onclick="stockCe(this.value)"
+                    id="stockCe"
+                    class="{% if i.live_stock_ce %} 
+                            focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800
+                            {% else %}
+                            focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900
+                            {% endif %}">
+                            Stock Call
+                    </button>
+                </td>
 
-    $("#NiftyRed").click(function() {
-        data = { name: 'Nifty', live: 'False' }
-        $.ajax({
-            url: "{% url 'nse_app:changesettings' %}",
-            method: "POST",
-            data: data,
-            success:
-            function(data){ 
-                location.reload()
-            }
-        })
-    })
-    
-    $("#StockCEGreen").click(function() {
-      data = { name: 'StockCe', live: 'True' }
-      $.ajax({
-          url: "{% url 'nse_app:changesettings' %}",
-          method: "POST",
-          data: data,
-          success: function(data){ 
-              location.reload()
-          }
-      })
-    })
+                <td class="px-6 py-4 text-center">
+                    <button type="button"
+                    value="{{i.live_stock_pe}}"
+                    onclick="stockPe(this.value)"
+                    id="stockPe"
+                    class="{% if i.live_stock_pe %} 
+                            focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800
+                            {% else %}
+                            focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900
+                            {% endif %}">
+                            Stock Put
+                    </button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+      </table>
 
-    $("#StockCERed").click(function() {
-      data = { name: 'StockCe', live: 'False' }
-      $.ajax({
-          url: "{% url 'nse_app:changesettings' %}",
-          method: "POST",
-          data: data,
-          success: function(data){ 
-              location.reload()
-          }
-      })
-    })
+      <script>
+  
+        function BankNifty(val){
+            data = { name: 'BankNifty', live: val, csrfmiddlewaretoken: "{{ csrf_token }}" }
+            $.ajax({
+                url: "{% url 'nse_app:changesettings' %}",
+                method: "POST",
+                data: data,
+                success: function(data){ 
+                    if(data.data === true){
+                        $('#banknifty').val('True')
+                        $('#banknifty').removeClass('focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900')
+                        $('#banknifty').addClass('focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800')
+                    }else{
+                        $('#banknifty').val('False')
+                        $('#banknifty').removeClass('focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800')
+                        $('#banknifty').addClass('focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900')
+                    }
+                }})
+        }
+  
+        function Nifty(val){
+            data = { name: 'Nifty', live: val, csrfmiddlewaretoken: "{{ csrf_token }}" }
+            $.ajax({
+                url: "{% url 'nse_app:changesettings' %}",
+                method: "POST",
+                data: data,
+                success: function(data){ 
+                    if(data.data === true){
+                        $('#nifty').val('True')
+                        $('#nifty').removeClass('focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900')
+                        $('#nifty').addClass('focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800')
+                    }else{
+                        $('#nifty').val('False')
+                        $('#nifty').removeClass('focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800')
+                        $('#nifty').addClass('focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900')
+                    }
+                }})
+        }
+  
+        function stockCe(val){
+            data = { name: 'StockCe', live: val, csrfmiddlewaretoken: "{{ csrf_token }}" }
+            $.ajax({
+                url: "{% url 'nse_app:changesettings' %}",
+                method: "POST",
+                data: data,
+                success: function(data){ 
+                    if(data.data === true){
+                        $('#stockCe').val('True')
+                        $('#stockCe').removeClass('focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900')
+                        $('#stockCe').addClass('focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800')
+                    }else{
+                        $('#stockCe').val('False')
+                        $('#stockCe').removeClass('focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800')
+                        $('#stockCe').addClass('focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900')
+                    }
+                }})
+        }
 
-    $("#StockPEGreen").click(function() {
-      data = { name: 'StockPe', live: 'True' }
-      $.ajax({
-          url: "{% url 'nse_app:changesettings' %}",
-          method: "POST",
-          data: data,
-          success: function(data){ 
-              location.reload()
-          }
-      })
-    })
+        function stockPe(val){
+            data = { name: 'StockPe', live: val, csrfmiddlewaretoken: "{{ csrf_token }}" }
+            $.ajax({
+                url: "{% url 'nse_app:changesettings' %}",
+                method: "POST",
+                data: data,
+                success: function(data){ 
+                    if(data.data === true){
+                        $('#stockPe').val('True')
+                        $('#stockPe').removeClass('focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900')
+                        $('#stockPe').addClass('focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800')
+                    }else{
+                        $('#stockPe').val('False')
+                        $('#stockPe').removeClass('focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800')
+                        $('#stockPe').addClass('focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900')
+                    }
+                }})
+        }
 
-    $("#StockPERed").click(function() {
-      data = { name: 'StockPe', live: 'False' }
-      $.ajax({
-          url: "{% url 'nse_app:changesettings' %}",
-          method: "POST",
-          data: data,
-          success: function(data){ 
-              location.reload()
-          }
-      })
-    })
+      </script>
 
-  </script>
-  <!-- MDB -->
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.1.0/mdb.min.js"></script>
-</body>
-
-</html>
+{% endblock content %}

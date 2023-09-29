@@ -1,139 +1,53 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Font Awesome -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
-  <!-- MDB -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.1.0/mdb.min.css" rel="stylesheet" />
-
-  <title>Pcr Values</title>
-<style>
-* {
-  box-sizing: border-box;
-}
-
-.row {
-  margin-left:-5px;
-  margin-right:-5px;
-}
-  
-.column {
-  float: left;
-  width: 50%;
-  padding: 5px;
-}
-
-/* Clearfix (clear floats) */
-.row::after {
-  content: "";
-  clear: both;
-  display: table;
-}
-
-table {
-  border-collapse: collapse;
-  border-spacing: 0;
-  width: 100%;
-  border: 1px solid #ddd;
-}
-
-th, td {
-  text-align: left;
-  padding: 16px;
-}
-
-tr:nth-child(even) {
-  background-color: #f2f2f2;
-}
-
-/* Responsive layout - makes the two columns stack on top of each other instead of next to each other on screens that are smaller than 600 px */
-@media screen and (max-width: 600px) {
-  .column {
-    width: 100%;
-  }
-}
-</style>
-</head>
-
-<body>
-
-  <nav class="navbar navbar-light bg-light">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#">Pcr Values</a>
-      <div class="dropdown">
-      <i id="dropdownMenuButton"
-        type="button"
-        data-mdb-toggle="dropdown"
-        aria-expanded="false" 
-        class="fas fa-cog fa-lg dropdown-toggle" 
-        style="padding-right: 25px;">
-      </i>
-        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-          <li><a class="dropdown-item" href="{% url 'nse_app:home' %}">Home</a></li>
-          <li><a class="dropdown-item" href="{% url 'nse_app:pcrvalues' %}">Pcr Values</a></li>
-          <li><a class="dropdown-item" href="{% url 'nse_app:settings' %}">Settings</a></li>
-          <li><a class="dropdown-item" href="{% url 'nse_app:pcrUpdate' %}">Update Pcr</a></li>
-        </ul>
-    </div>
-    </div>
-  </nav>
-  <br>
+{% extends 'base.html' %}
 
 
-    <div style="width: 99%; margin-left: 10px;">
-      <div class="row">
-        <div class="column">
-          <table>
-            <tr>
-              <!-- <th>No.</th> -->
-              <th>Time Stamp</th>
-              <th>Option</th>
-              <th>Pcr Value</th>
+{% block head %}
+<title>Pcr Value</title>    
+{% endblock head %}
+
+{% block content %}
+    <div class="flex flex-row">
+        <table class="table w-1/2 mr-4 border ml-3">
+          <thead>
+            <tr class="bg-gray-100">
+              <th class="px-4 py-2">Time Stamp</th>
+              <th class="px-4 py-2">Option</th>
+              <th class="px-4 py-2">Pcr Value</th>
             </tr>
+          </thead>
+          <tbody>
             {% for i in data %}
-              {% if i.option_name == 'BANKNIFTY' %}       
-                  <tr>
-                      <!-- <td>{{ forloop.counter }}</td> -->
-                      <td>{{ i.option_name }}</td>
-                      <td>{{ i.timestamp }}</td>
-                      <td>{{ i.pcr_value }}</td>
-                  </tr>
-              {% endif %}
-            {% endfor %}
-          </table>
-        </div>
-        <div class="column">
-          <table>
-              <tr>
-                <!-- <th>No.</th> -->
-                <th>Time Stamp</th>
-                <th>Option</th>
-                <th>Pcr Value</th>
-              </tr>
-              {% for j in data %}
-                {% if j.option_name == 'NIFTY' %}       
-                    <tr>
-                        <!-- <td>{{ forloop.counter }}</td> -->
-                        <td>{{ j.option_name }}</td>
-                        <td>{{ j.timestamp }}</td>
-                        <td>{{ j.pcr_value }}</td>
+                {% if i.option_name == 'BANKNIFTY' %}
+                    <tr class="border">
+                    <td class="px-4 py-2">{{ i.option_name }}</td>
+                    <td class="px-4 py-2">{{ i.timestamp }}</td>
+                    <td class="px-4 py-2">{{ i.pcr_value }}</td>
                     </tr>
                 {% endif %}
-              {% endfor %}
-            </table>
-        </div>
+            {% endfor %}
+          </tbody>
+        </table>
+        
+        <table class="table w-1/2 mr-4 border">
+          <thead>
+            <tr class="bg-gray-100">
+              <th class="px-4 py-2">Time Stamp</th>
+              <th class="px-4 py-2">Option</th>
+              <th class="px-4 py-2">Pcr Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for i in data %}
+                {% if i.option_name == 'NIFTY' %}
+                    <tr class="border">
+                    <td class="px-4 py-2">{{ i.option_name }}</td>
+                    <td class="px-4 py-2">{{ i.timestamp }}</td>
+                    <td class="px-4 py-2">{{ i.pcr_value }}</td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+          </tbody>
+        </table>
       </div>
-    </div> 
-
-    <!-- MDB -->
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.1.0/mdb.min.js"></script>
-
-    </body>
-
-</html>
+      
+{% endblock content %}

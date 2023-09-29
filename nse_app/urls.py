@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from nse_app.Scheduler import Nifty
+from . import views_api
 
 app_name = "nse_app"
 
@@ -15,27 +15,31 @@ urlpatterns = [
     path('pcrvalues/', views.PcrValue, name = 'pcrvalues'),
     path('pcrUpdate/', views.pcrUpdate, name = 'pcrUpdate'),
 
-    path('buyFutureOp', views.buyFutureOp.as_view(), name = 'buyFutureOp'),
-    path('buyStockFuture', views.buyStockFuture.as_view(), name = 'buyStockFuture'),
+    path('export/', views.export_to_excel, name='export_to_excel'),
+
+
+    # API
+    path('logout', views_api.Logout.as_view(), name="logout"),
     
-    path('stocks', views.stock_details.as_view(), name = 'stock_detail'),
-    path('liveStocks', views.liveStocks.as_view(), name = 'liveStocks'), 
-    path('stockname', views.PcrStockName.as_view(), name = 'stockname'),
-    
+    path('buyFutureOp', views_api.buyFutureOp.as_view(), name = 'buyFutureOp'),
+    path('buyStockFuture', views_api.buyStockFuture.as_view(), name = 'buyStockFuture'),
+
     ## SETTING API
-    path('accountdetail/', views.accountDetailsListCreateView.as_view(), name='accountDetailsListCreateView'),
-    path('accountdetail/<int:pk>', views.accountDetailsRetrieveUpdateDeleteView.as_view(), name='accountDetailsRetrieveUpdateDeleteView'),
+    path('setting_nse', views_api.setting_nse.as_view(), name = 'setting_nse'), 
+    path("get_setting_data/<int:pk>", views_api.SnippetDetail.as_view(), name="setting_nse"),
+    path('patch_stock/<int:pk>', views_api.patch_stock, name = 'patch-stock'),
+    path('delete_stock/<int:pk>', views_api.delete_stock, name = 'delete-stock'),
     
-    path('setting_nse', views.setting_nse.as_view(), name = 'setting_nse'), 
-    path("get_setting_data/<int:pk>", views.SnippetDetail.as_view(), name="setting_nse"),
-    path('patch_stock/<int:pk>', views.patch_stock, name = 'patch-stock'),
-    path('delete_stock/<int:pk>', views.delete_stock, name = 'delete-stock'),
+    path('accountdetail/', views_api.accountDetailsListCreateView.as_view(), name='accountDetailsListCreateView'),
+    path('accountdetail/<int:pk>', views_api.accountDetailsRetrieveUpdateDeleteView.as_view(), name='accountDetailsRetrieveUpdateDeleteView'),
+    
+    path('stocks', views_api.stock_details.as_view(), name = 'stock_detail'),
+    path('liveStocks', views_api.liveStocks.as_view(), name = 'liveStocks'), 
+    path('stockname', views_api.PcrStockName.as_view(), name = 'stockname'),
     
     ## GET NSEDATA
-    path('api/stockData', views.stockData, name = 'apistock'),
-    path('api/getStock/<slug:stockname>', views.getStock, name = 'getStock'),
-
-
-    path('logout', views.Logout.as_view(), name="logout"),
+    path('api/stockData', views_api.stockData, name = 'apistock'),
+    path('api/getStock/<slug:stockname>', views_api.getStock, name = 'getStock'),
+    
 
 ]

@@ -113,9 +113,8 @@ def sellFunOption(strikePrice, BidPrice, squareoff, stoploss, OptionId, lots, id
                 "stoploss": '0',
                 "quantity":total_qty,
             }
-            # # orderId = obj.placeOrder(orderparams)
-            # # orderId = 0zt(orderId))
-            # stock_detail.objects.filter(id = id).update(order_id = orderId, qty = total_qty)
+            orderId = obj.placeOrder(orderparams)
+            stock_detail.objects.filter(id = id).update(order_id = orderId, qty = total_qty)
 
         except Exception as e:
             print(
@@ -142,9 +141,9 @@ def sellFunOption(strikePrice, BidPrice, squareoff, stoploss, OptionId, lots, id
                 "trailingStopLoss": "5",
             }
             print(orderparams)
-            # orderId = obj.placeOrder(orderparams)
-            # print("The order id is: {}".format(orderId))
-
+            orderId = obj.placeOrder(orderparams)
+            print("The order id is: ", orderId)
+            stock_detail.objects.filter(id = id).update(order_id = orderId, qty = total_qty)
         except Exception as e:
             print(
                 "Order placement failed: {}".format(e.message))
@@ -304,7 +303,7 @@ def sellFunStock(strikePrice, BidPrice, squareoff, stoploss, OptionId, lots, sto
 
 
 
-def optionFuture(option, lots, profit, loss, buy_sell='BUY'):
+def optionFuture(option, lots, profit, loss, buy_sell='BUY', is_live=False):
     '''
     Buy Index Future
     '''
@@ -351,10 +350,13 @@ def optionFuture(option, lots, profit, loss, buy_sell='BUY'):
                 "quantity": qty,
             }
             
-            # orderId = obj.placeOrder(orderparams)
             print(orderparams)
-            return {'orderId': ltp, 'ltp':ltp, "squareoff": squareoff, "stoploss": stoploss}
-            # return orderId
+            orderId = 0
+            if is_live == True:
+                orderId = obj.placeOrder(orderparams)
+                return {'orderId': orderId, 'ltp':ltp, "squareoff": squareoff, "stoploss": stoploss, "qty": qty}
+            else:
+                return {'orderId': orderId, 'ltp':ltp, "squareoff": squareoff, "stoploss": stoploss, "qty": qty}
             
         except Exception as e:
             print(
@@ -404,7 +406,7 @@ def futureStockLivePrice(stock):
     return ltp['data']['ltp']
 
 
-def stockFutureBuyPrice(stock, lots, profit, loss, buy_sell='BUY'):
+def stockFutureBuyPrice(stock, lots, profit, loss, buy_sell='BUY', is_order='False'):
     '''
     stock Future live price of index
     '''
@@ -432,12 +434,41 @@ def stockFutureBuyPrice(stock, lots, profit, loss, buy_sell='BUY'):
     else:
         squareoff = ltp - profit
         stoploss = ltp + loss
+        
+    def place_order_bo(token, symbol, qty, exch_seg, buy_sell, ordertype, price):
+        t_qty = int(qty) * int(lots)
+        
+        try:
+            orderparams = {
+                "variety": 'ROBO',
+                "tradingsymbol": symbol,
+                "symboltoken": token,
+                "transactiontype": buy_sell,
+                'exchange': exch_seg,
+                "ordertype": ordertype,
+                "producttype": 'BO',
+                "duration": "DAY",
+                "price": price,
+                "squareoff": squareoff,
+                "stoploss": stoploss,
+                "quantity": t_qty,
+            }
+            
+            if is_order:
+                orderId = obj.placeOrder(orderparams)
+            else:
+                orderId = 0
+            
+            print(orderId, orderparams)
+            return ltp, round(squareoff, 2), round(stoploss, 2), orderId, qty*int(lots)
+            
+        except Exception as e:
+            print(
+                "Order placement failed: {}".format(e.message))
+    return place_order_bo(token, symbol, qty, 'NFO', buy_sell, 'LIMIT', ltp)
 
-    orderId = 0
-    return ltp, round(squareoff, 2), round(stoploss, 2), orderId, qty*int(lots)
 
-
-def ltpData(option_name, strikePrice, pe_ce, a):
+def ltpData(option_name, strikePrice, pe_ce, a= date(2023, 9, 26)):
     '''
     live price of option strike price
     '''

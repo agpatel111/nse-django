@@ -25,10 +25,8 @@ def BANKNIFTY():
 
         def fetch_data(self):
             url = f'https://www.nseindia.com/api/option-chain-indices?symbol={self.symbol}'
-            response = requests.get(url, headers=self.headers)
-            response.raise_for_status()
-            data = response.json()
-            return data
+            response = requests.get(url, headers=self.headers).json()
+            return response
         
         
     InnerClass_ = InnerClass()

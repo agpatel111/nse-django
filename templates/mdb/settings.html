@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+  <!-- MDB -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.1.0/mdb.min.css" rel="stylesheet" />
+
+  <script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" crossorigin="anonymous"></script>
+  <title>Settings</title>
+  <style>
+    body{
+      overflow-y: scroll; 
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="navbar navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Settings</a>
+      <div class="dropdown">
+      <i id="dropdownMenuButton"
+        type="button"
+        data-mdb-toggle="dropdown"
+        aria-expanded="false" 
+        class="fas fa-cog fa-lg dropdown-toggle" 
+        style="padding-right: 25px;">
+      </i>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          <li><a class="dropdown-item" href="{% url 'nse_app:home' %}">Home</a></li>
+          <li><a class="dropdown-item" href="{% url 'nse_app:pcrvalues' %}">Pcr Values</a></li>
+          <li><a class="dropdown-item" href="{% url 'nse_app:settings' %}">Settings</a></li>
+          <li><a class="dropdown-item" href="{% url 'nse_app:pcrUpdate' %}">Update Pcr</a></li>
+        </ul>
+    </div>
+    </div>
+  </nav>
+  <br>
+
+  <table class="table table-sm">
+    <thead class="bg-light">
+      <tr>
+        <th>Banknifty</th>
+        <th>Nifty</th>
+        <th>Stock Call</th>
+        <th>Stock Put</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for i in data %}
+        <tr>
+            <td>
+                <button type="button" 
+                {% if i.live_banknifty %}
+                class="btn btn-success"
+                id="BankNiftyGreen"
+                {% else %}
+                class="btn btn-danger"
+                id="BankNiftyRed"
+                {% endif %}
+                     >BankNifty</button>
+            </td>
+            <td>
+                <button type="button"
+                {% if i.live_nifty %}
+                class="btn btn-success"
+                id="NiftyGreen"
+                {% else %}
+                class="btn btn-danger"
+                id="NiftyRed"
+                {% endif %} >Nifty</button>
+            </td>
+            <td>
+                <button type="button"
+                {% if i.live_stock_ce %}
+                class="btn btn-success"
+                id="StockCEGreen"
+                {% else %}
+                class="btn btn-danger"
+                id="StockCERed"
+                {% endif %} >Stock CAll</button>
+            </td>
+            <td>
+                <button type="button"
+                {% if i.live_stock_pe %}
+                class="btn btn-success"
+                id="StockPEGreen"
+                {% else %}
+                class="btn btn-danger"
+                id="StockPERed"
+                {% endif %} >Stock PUT</button>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+  </table>
+
+  <script>
+    $("#BankNiftyGreen").click(function() {
+        data = { name: 'BankNifty', live: 'True' }
+        $.ajax({
+            url: "{% url 'nse_app:changesettings' %}",
+            method: "POST",
+            data: data,
+            success: function(data){ 
+                location.reload()
+            }
+        })
+    })
+
+    $("#BankNiftyRed").click(function() {
+        data = { name: 'BankNifty', live: 'False' }
+        $.ajax({
+            url: "{% url 'nse_app:changesettings' %}",
+            method: "POST",
+            data: data,
+            success:
+            function(data){ 
+                location.reload()
+            }
+        })
+    })
+    
+    $("#NiftyGreen").click(function() {
+        data = { name: 'Nifty', live: 'True' }
+        $.ajax({
+            url: "{% url 'nse_app:changesettings' %}",
+            method: "POST",
+            data: data,
+            success:
+            function(data){ 
+                location.reload()
+            }
+        })
+    })
+
+    $("#NiftyRed").click(function() {
+        data = { name: 'Nifty', live: 'False' }
+        $.ajax({
+            url: "{% url 'nse_app:changesettings' %}",
+            method: "POST",
+            data: data,
+            success:
+            function(data){ 
+                location.reload()
+            }
+        })
+    })
+    
+    $("#StockCEGreen").click(function() {
+      data = { name: 'StockCe', live: 'True' }
+      $.ajax({
+          url: "{% url 'nse_app:changesettings' %}",
+          method: "POST",
+          data: data,
+          success: function(data){ 
+              location.reload()
+          }
+      })
+    })
+
+    $("#StockCERed").click(function() {
+      data = { name: 'StockCe', live: 'False' }
+      $.ajax({
+          url: "{% url 'nse_app:changesettings' %}",
+          method: "POST",
+          data: data,
+          success: function(data){ 
+              location.reload()
+          }
+      })
+    })
+
+    $("#StockPEGreen").click(function() {
+      data = { name: 'StockPe', live: 'True' }
+      $.ajax({
+          url: "{% url 'nse_app:changesettings' %}",
+          method: "POST",
+          data: data,
+          success: function(data){ 
+              location.reload()
+          }
+      })
+    })
+
+    $("#StockPERed").click(function() {
+      data = { name: 'StockPe', live: 'False' }
+      $.ajax({
+          url: "{% url 'nse_app:changesettings' %}",
+          method: "POST",
+          data: data,
+          success: function(data){ 
+              location.reload()
+          }
+      })
+    })
+
+  </script>
+  <!-- MDB -->
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.1.0/mdb.min.js"></script>
+</body>
+
+</html>

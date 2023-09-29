@@ -20,8 +20,8 @@ BANKNIFTY_PE = "BANKNIFTY PE"
 BANKNIFTY_FUTURE = 'BANKNIFTY FUTURE'
 
 BANKNIFTY_URL = 'https://www.nseindia.com/api/option-chain-indices?symbol=BANKNIFTY'
-
 SETTINGS_URL = 'http://zerodha.harmistechnology.com/settings'
+
 
 def BankniftyApiFun():
     ##  Set variable as global to use across different functions 
@@ -60,6 +60,7 @@ def BankniftyApiFun():
     CEMax, CEMaxValue = Coustom.resistancePriceData(up_price[0:5], upSliceList)
 
     pcr = Coustom.pcrValue(api_data)
+    pcr = round(pcr, 2)
     
     down_first_total_oi = ((down_price[-1]['PE']['changeinOpenInterest'] + down_price[-1]['PE']['openInterest']) - (down_price[-1]['CE']['changeinOpenInterest'] + down_price[-1]['CE']['openInterest']))
     up_first_total_oi = ((up_price[0]['PE']['changeinOpenInterest'] + up_price[0]['PE']['openInterest']) - (up_price[0]['CE']['changeinOpenInterest'] + up_price[0]['CE']['openInterest']))
@@ -193,7 +194,7 @@ def BANKNIFTY():
     ''' Set time to run function in given time '''
     current_time = datetime.datetime.now().time()
     start_time = datetime.time(hour=9, minute=40)
-    end_time = datetime.time(hour=15, minute=20)
+    end_time = datetime.time(hour=15, minute=15)
     
     if start_time <= current_time <= end_time:
         global api_data, livePrice, timestamp, filteredData, PEMax, CEMax, down_price, up_price, downSliceList, upSliceList, pcr, base_Price_down, base_Price_up, lotSizeFuture
@@ -225,7 +226,19 @@ def BANKNIFTY():
                         stop_loss_CE = '%.2f'% (BidPrice_CE - (BidPrice_CE * lossPercentage_CALL ) / 100)
                         
                         postData = { "buy_price": BidPrice_CE, "base_strike_price":strikePrice_CE, "live_Strike_price":livePrice, "sell_price": sellPrice_CE, "stop_loseprice": stop_loss_CE, 'percentage': OptionId_CALL, 'call_put':call_call}
-                        obj_banknifty_old = stock_detail.objects.create(status="BUY",buy_price = BidPrice_CE, base_strike_price=strikePrice_CE, live_Strike_price=livePrice, live_brid_price=BidPrice_CE, sell_price= sellPrice_CE ,stop_loseprice=stop_loss_CE, percentage_id=OptionId_CALL , call_put =call_call, buy_pcr = '%.2f'% (pcr) )
+                        obj_banknifty_old = stock_detail.objects.create(
+                            status="BUY", 
+                            qty= lot_size_CALL*15, 
+                            buy_price = BidPrice_CE, 
+                            base_strike_price=strikePrice_CE, 
+                            live_Strike_price=livePrice, 
+                            live_brid_price=BidPrice_CE, 
+                            sell_price= sellPrice_CE ,
+                            stop_loseprice=stop_loss_CE, 
+                            percentage_id=OptionId_CALL , 
+                            call_put =call_call, 
+                            buy_pcr = '%.2f'% (pcr) 
+                            )
                         if is_live_banknifty == True:
                             sellFunOption(strikePrice_CE, BidPrice_CE, squareoff_CE, stoploss_CE, OptionId_CALL, lot_size_CALL, obj_banknifty_old.id, exprityDate)
                         print('SuccessFully Buy IN BANKNIFTY CALL: ', postData)                     
@@ -247,7 +260,19 @@ def BANKNIFTY():
                         stop_loss_PUT = '%.2f'% (BidPrice_PUT - (BidPrice_PUT * lossPercentage_PUT ) / 100)
                         postData = { "buy_price": BidPrice_PUT, "base_strike_price":strikePrice_PUT, "live_Strike_price":livePrice, "sell_price": sellPrice_PUT, "stop_loseprice": stop_loss_PUT, 'percentage': OptionId_PUT, 'call_put':put_put}
                         
-                        obj_banknifty_old = stock_detail.objects.create(status="BUY",buy_price = BidPrice_PUT,live_brid_price=BidPrice_PUT , base_strike_price=strikePrice_PUT, live_Strike_price=livePrice, sell_price= sellPrice_PUT ,stop_loseprice=stop_loss_PUT, percentage_id=OptionId_PUT , call_put =put_put, buy_pcr = '%.2f'% (pcr) )
+                        obj_banknifty_old = stock_detail.objects.create(
+                            status="BUY", 
+                            qty= lot_size_PUT*15, 
+                            buy_price = BidPrice_PUT,
+                            live_brid_price=BidPrice_PUT , 
+                            base_strike_price=strikePrice_PUT, 
+                            live_Strike_price=livePrice, 
+                            sell_price= sellPrice_PUT ,
+                            stop_loseprice=stop_loss_PUT, 
+                            percentage_id=OptionId_PUT , 
+                            call_put =put_put, 
+                            buy_pcr = '%.2f'% (pcr) 
+                            )
                         if is_live_banknifty == True:
                             sellFunOption(strikePrice_PUT, BidPrice_PUT, squareoff_PUT, stoploss_PUT, OptionId_PUT, lot_size_PUT, obj_banknifty_old.id, exprityDate)
                         print('SuccessFully Buy IN BANKNIFTY PUT: ',postData)
@@ -265,10 +290,33 @@ def BANKNIFTY():
                         postData = { "buy_price": liveFuture, "sell_price": (liveFuture + profitFuture), "stop_loseprice": (liveFuture - lossFuture), 'percentage': OptionId_Future, 'type': 'BUY'}
                         
                         if is_live_banknifty == True:
-                            obj = optionFuture("BANKNIFTY", lotSizeFuture, profitFuture, lossFuture, "BUY")
-                            stock_detail.objects.create(status="BUY", type= 'BUY', base_strike_price=nbpd['strikePrice'], live_Strike_price=livePrice, order_id = obj['orderId'], buy_price=liveFuture, sell_price = (liveFuture + profitFuture) , stop_loseprice = (liveFuture - lossFuture), percentage_id=OptionId_Future, buy_pcr = '%.2f'% (pcr) )
+                            obj = optionFuture("BANKNIFTY", lotSizeFuture, profitFuture, lossFuture, "BUY", is_live_banknifty)
+                            stock_detail.objects.create(
+                            status="BUY", 
+                            type= 'BUY', 
+                            qty= lotSizeFuture*15, 
+                            base_strike_price=nbpd['strikePrice'], 
+                            live_Strike_price=livePrice, 
+                            order_id = obj['orderId'], 
+                            buy_price=liveFuture, 
+                            sell_price = (liveFuture + profitFuture) , 
+                            stop_loseprice = (liveFuture - lossFuture), 
+                            percentage_id=OptionId_Future, 
+                            buy_pcr = '%.2f'% (pcr) 
+                            )
                         else:
-                            stock_detail.objects.create(status="BUY", type= 'BUY', base_strike_price=nbpd['strikePrice'], live_Strike_price=livePrice, buy_price=liveFuture, sell_price = (liveFuture + profitFuture) , stop_loseprice = (liveFuture - lossFuture), percentage_id=OptionId_Future, buy_pcr = '%.2f'% (pcr) )
+                            stock_detail.objects.create(
+                            status="BUY", 
+                            type= 'BUY', 
+                            qty= lotSizeFuture*15, 
+                            base_strike_price=nbpd['strikePrice'], 
+                            live_Strike_price=livePrice, 
+                            buy_price=liveFuture, 
+                            sell_price = (liveFuture + profitFuture) , 
+                            stop_loseprice = (liveFuture - lossFuture), 
+                            percentage_id=OptionId_Future, 
+                            buy_pcr = '%.2f'% (pcr) 
+                            )
                         print('Successfully BUY FUTURE: ', postData)
 
 
@@ -282,10 +330,33 @@ def BANKNIFTY():
                         liveFuture = futureLivePrice('BANKNIFTY')
                         postData = { "buy_price": liveFuture, "sell_price": (liveFuture - profitFuture), "stop_loseprice": (liveFuture + lossFuture), 'percentage': OptionId_Future, 'type': 'SELL'}
                         if is_live_banknifty == True:
-                            obj = optionFuture("BANKNIFTY", lotSizeFuture, profitFuture, lossFuture, "SELL")
-                            stock_detail.objects.create(status="BUY", type= 'SELL', base_strike_price=bpu['strikePrice'], live_Strike_price=livePrice, order_id = obj['orderId'] , buy_price=liveFuture, sell_price = (liveFuture - profitFuture) , stop_loseprice = (liveFuture + lossFuture), percentage_id=OptionId_Future, buy_pcr = '%.2f'% (pcr) )
+                            obj = optionFuture("BANKNIFTY", lotSizeFuture, profitFuture, lossFuture, "SELL", is_live_banknifty)
+                            stock_detail.objects.create(
+                                status="BUY", 
+                                type= 'SELL', 
+                                qty= lotSizeFuture*15, 
+                                base_strike_price=bpu['strikePrice'], 
+                                live_Strike_price=livePrice, 
+                                order_id = obj['orderId'] , 
+                                buy_price=liveFuture, 
+                                sell_price = (liveFuture - profitFuture) , 
+                                stop_loseprice = (liveFuture + lossFuture), 
+                                percentage_id=OptionId_Future, 
+                                buy_pcr = '%.2f'% (pcr) 
+                                )
                         else:
-                            stock_detail.objects.create(status="BUY", type= 'SELL', base_strike_price=bpu['strikePrice'], live_Strike_price=livePrice, buy_price=liveFuture, sell_price = (liveFuture - profitFuture) , stop_loseprice = (liveFuture + lossFuture), percentage_id=OptionId_Future, buy_pcr = '%.2f'% (pcr) )
+                            stock_detail.objects.create(
+                            status="BUY", 
+                            type= 'SELL', 
+                            qty= lotSizeFuture*15, 
+                            base_strike_price=bpu['strikePrice'], 
+                            live_Strike_price=livePrice, 
+                            buy_price=liveFuture, 
+                            sell_price = (liveFuture - profitFuture) , 
+                            stop_loseprice = (liveFuture + lossFuture), 
+                            percentage_id=OptionId_Future, 
+                            buy_pcr = '%.2f'% (pcr) 
+                            )
                         print('Successfully SELL FUTURE: ', postData)
 
 
